@@ -3,7 +3,7 @@
     "name": "barracks-mobile-app",
     "slug": "barracks-mobile-app",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/images/icon.png",
     "scheme": "barracksmobileapp",
     "userInterfaceStyle": "automatic",
