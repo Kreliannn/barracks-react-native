@@ -3,9 +3,9 @@ import { Drawer } from "expo-router/drawer";
 export default function DrawerLayout() {
   return (
     <Drawer>
-      <Drawer.Screen name="dashboard/index" options={{ title: "dashboard" }} />
-      <Drawer.Screen name="firstPage/index" options={{ title: "First Page" }} />
-      <Drawer.Screen name="secondPage/index" options={{ title: "Second Page" }} />
+      <Drawer.Screen name="dashboard/index" options={{ title: "Dashboard" }} />
+      <Drawer.Screen name="transaction/index" options={{ title: "History" }} />
+      <Drawer.Screen name="orders/index" options={{ title: "Active Orders" }} />
     </Drawer>
   );
 }
