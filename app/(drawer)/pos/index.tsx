@@ -1,3 +1,5 @@
+import AddCartButton from '@/components/pos/addCart';
+import { CartComponent } from '@/components/pos/cart';
 import TablesPage from '@/components/pos/tables';
 import useTableStore from '@/store/table.store';
 import { getMenuInterface } from '@/types/menu.type';
@@ -94,9 +96,8 @@ export default function PosPage() {
                     </Text>
                     <Text className="text-sm text-gray-500">₱ {item.variants[0].price}</Text>
 
-                    <TouchableOpacity className="mt-2 bg-green-600 py-2 rounded-lg">
-                        <Text className="text-center text-white font-bold">Add</Text>
-                    </TouchableOpacity>
+                    <AddCartButton menu={item} />
+                    
                     </View>
                 </View>
                 )}
@@ -124,7 +125,9 @@ export default function PosPage() {
       </View>
 
       {/* RIGHT SIDE - 1/3 (Empty) */}
-      <View className="w-1/3 h-full bg-stone-200" />
+      <View className="w-1/3 h-full bg-stone-200" >
+          <CartComponent table={table} /> 
+      </View>
     </View>
   )
 }

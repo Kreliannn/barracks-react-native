@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
 
-export default function ModalComponent() {
+export default function ModalTEAST() {
   const [visible, setVisible] = useState(false);
 
   return (

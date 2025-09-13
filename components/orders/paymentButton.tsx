@@ -1,3 +1,4 @@
+import useActiveTableStore from "@/store/activeTable.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
@@ -5,14 +6,13 @@ import { Picker } from "@react-native-picker/picker";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-    Image,
-    Modal,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Image,
+  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
-
 
 
 export default function PaymentButton({ order, setOrders }:  { order: getOrdersInterface, setOrders :  React.Dispatch<React.SetStateAction<getOrdersInterface[]>> }) {
@@ -21,7 +21,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
 
     const [paymentMethod, setPaymentMethod] = useState("cash")
 
-    // const {removeTable} = useActiveTableStore()
+    const {removeTable} = useActiveTableStore()
         
     const mutation = useMutation({
         mutationFn: (data: { id : string , paymentMethod : string}) =>
@@ -44,7 +44,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
             setVisible(false)
             return errorAlert("too low")
         } 
-        //removeTable(order.table)
+        removeTable(order.table)
         mutation.mutate({ id : order._id , paymentMethod})
     }
 

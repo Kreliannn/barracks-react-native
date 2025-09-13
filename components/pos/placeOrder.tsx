@@ -1,0 +1,134 @@
+import useActiveTableStore from "@/store/activeTable.store";
+import useOrderStore from "@/store/cart.store";
+import useTableStore from "@/store/table.store";
+import useUserStore from "@/store/user.store";
+import { errorAlert, successAlert } from "@/utils/alert";
+import axiosInstance from "@/utils/axios";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
+
+
+export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
+  const { orders, clearOrders } = useOrderStore();
+  const { user } = useUserStore();
+  const { table, setTable } = useTableStore();
+  const { addTable } = useActiveTableStore();
+
+  const [open, setOpen] = useState(false);
+  const [orderType, setOrderType] = useState("dine in");
+
+  const now = new Date();
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const mutation = useMutation({
+    mutationFn: (data: any) => axiosInstance.post("/order", data),
+    onSuccess: () => {
+      setOpen(false);
+      clearOrders();
+     successAlert( "Order placed successfully!");
+    },
+    onError: () => {
+     errorAlert( "Something went wrong while placing the order.");
+    },
+  });
+
+  const handlePlaceOrder = () => {
+    if (!user?.fullname || !user?.branch) return Alert.alert("No user");
+
+    const formattedDate = new Date().toISOString().split("T")[0];
+
+    const orderData = {
+      orders,
+      total: orderInfo.totalWithVat,
+      vat: orderInfo.vat,
+      subTotal: orderInfo.subTotal,
+      grandTotal: orderInfo.discountedTotal,
+      totalDiscount: orderInfo.totalDiscount,
+      serviceFee: orderInfo.serviceFee,
+      orderType,
+      table,
+      cashier: user.fullname,
+      branch: user.branch,
+      date: formattedDate.toString(),
+      time,
+      status: "active",
+      paymentMethod: "pending",
+    };
+
+    addTable(table);
+    setTable("");
+    mutation.mutate(orderData);
+  };
+
+  return (
+    <>
+      {/* Trigger Button */}
+      <TouchableOpacity
+        onPress={() => setOpen(true)}
+        className="bg-green-600 py-3 rounded-lg w-full"
+      >
+        <Text className="text-center text-white font-bold text-lg">
+          Place Order
+        </Text>
+      </TouchableOpacity>
+
+      {/* Modal */}
+      <Modal
+        visible={open}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setOpen(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50 px-6">
+          <View className="w-full max-w-md bg-white rounded-xl p-6">
+            {/* Header */}
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-xl font-bold">Place Order</Text>
+              <TouchableOpacity onPress={() => setOpen(false)}>
+                <Text className="text-gray-500 text-lg font-bold">✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Order Type Buttons */}
+            <View className="flex-row justify-between mb-6 gap-2 space-x-2">
+              {["dine in", "take out", "grab"].map((type) => (
+                <TouchableOpacity
+                  key={type}
+                  onPress={() => setOrderType(type)}
+                  className={`flex-1 py-3 rounded-lg ${
+                    orderType === type
+                      ? "bg-green-600"
+                      : "bg-gray-200"
+                  }`}
+                >
+                  <Text
+                    className={`text-center font-bold ${
+                      orderType === type ? "text-white" : "text-black"
+                    }`}
+                  >
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Place Order Button */}
+            <TouchableOpacity
+              onPress={handlePlaceOrder}
+              className="bg-green-500 py-3 rounded-lg shadow"
+            >
+              <Text className="text-center text-white font-bold text-lg">
+                Place Order
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </>
+  );
+}
