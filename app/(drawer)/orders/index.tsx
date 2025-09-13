@@ -1,4 +1,5 @@
 import OrderList from '@/components/orders/orderList';
+import RefillButton from '@/components/orders/refillButton';
 import { getOrdersInterface } from '@/types/orders.type';
 import axiosInstance from '@/utils/axios';
 import { useQuery } from '@tanstack/react-query';
@@ -39,9 +40,7 @@ export default function OrdersPage() {
       {/* Header */}
       <View className="bg-green-900 p-4 flex-row items-center justify-between">
         <Text className="text-xl font-bold text-white">{order.table}</Text>
-        <TouchableOpacity className="bg-white rounded-md px-3 py-2">
-          <Text className="text-sm font-semibold text-green-900">Refill</Text>
-        </TouchableOpacity>
+        <RefillButton table={order.table}  orders={order.orders} />
       </View>
 
         { /* Order Info */}
