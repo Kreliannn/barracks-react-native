@@ -42,6 +42,8 @@ export default function TransactionPage() {
     console.log(sales);
   };
 
+  
+
   return (
     <View className="flex-1 bg-stone-100">
       {/* Top fixed header */}

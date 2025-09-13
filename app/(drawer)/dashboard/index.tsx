@@ -2,7 +2,7 @@ import useUserStore from "@/store/user.store";
 import axiosInstance from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
 export default function Index() {
   const { user } = useUserStore();
@@ -22,35 +22,55 @@ export default function Index() {
   }, [data]);
 
   return (
-    <View className="flex-1 bg-white px-8 py-4 flex-row">
-      {/* Left Section: Cashier Info */}
-      <View className="flex-1 justify-center pr-6">
-        <Text className="text-green-800 text-2xl font-bold mb-2">
-          Cashier: {user?.fullname || "Not Found"}
+<View className="flex-1 bg-gradient-to-r from-green-900 to-emerald-900 flex-row">
+  {/* Left Side: Banner */}
+  <View className="w-1/3">
+    <Image
+      source={require("@/assets/logo.jpg")}
+      className="w-full h-full"
+      resizeMode="cover"
+    />
+  </View>
+
+  {/* Right Side: Dashboard */}
+  <View className="w-2/3 px-6 py-6">
+    {/* Cashier Info */}
+    <Text className="text-green-900 text-3xl font-extrabold mb-3">
+      Cashier Dashboard
+    </Text>
+    <View className="bg-white/10 rounded-xl p-4 mb-6">
+      <Text className="text-green-800 text-xl font-semibold">
+        cashier: {user?.fullname || "Not Found"}
+      </Text>
+      <Text className="text-stone-700 text-lg mt-1">
+        Branch:  {user?.branch || "Not Found"}
+      </Text>
+    </View>
+
+    {/* Stats Boxes */}
+    <View className="flex-row gap-4">
+      {/* Today Sales */}
+      <View className="flex-1 bg-white rounded-2xl py-6 px-4 items-center shadow-lg">
+        <Text className="text-green-700 text-lg font-semibold mb-1">
+          Today Sales
         </Text>
-        <Text className="text-green-600 text-lg">
-          Branch: {user?.branch || "Not Found"}
+        <Text className="text-green-900 text-4xl font-extrabold">
+          ₱{dashboardData.salesToday.toLocaleString()}
         </Text>
       </View>
 
-      {/* Right Section: Stats Boxes */}
-      <View className="flex-1 flex-row space-x-6 items-center justify-center gap-2">
-        {/* Today Sales */}
-        <View className="flex-1 bg-green-100 rounded-2xl p-6 items-center shadow-md">
-          <Text className="text-green-700 text-lg mb-2">Today Sales</Text>
-          <Text className="text-green-900 text-3xl font-bold">
-            ₱{dashboardData.salesToday}
-          </Text>
-        </View>
-
-        {/* Active Tables */}
-        <View className="flex-1 bg-green-100 rounded-2xl p-6 items-center shadow-md">
-          <Text className="text-green-700 text-lg mb-2">Active Tables</Text>
-          <Text className="text-green-900 text-3xl font-bold">
-            {dashboardData.activeTatble}
-          </Text>
-        </View>
+      {/* Active Tables */}
+      <View className="flex-1 bg-white rounded-2xl py-6 px-4 items-center shadow-lg">
+        <Text className="text-green-700 text-lg font-semibold mb-1">
+          Active Tables
+        </Text>
+        <Text className="text-green-900 text-4xl font-extrabold">
+          {dashboardData.activeTatble}
+        </Text>
       </View>
     </View>
+  </View>
+</View>
+
   );
 }

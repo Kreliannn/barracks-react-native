@@ -8,8 +8,8 @@ import React, { useState } from "react";
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("krel");
+  const [password, setPassword] = useState("123");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -59,10 +59,13 @@ const { setUser } = useUserStore();
 
       {/* Form */}
       <View className="w-full max-w-md">
+        
         {/* Username */}
         <Text className="text-xs font-medium text-green-800 uppercase mb-2">Username</Text>
         <View className="flex-row items-center border-b border-gray-200 mb-4">
-          
+
+       
+              
           <TextInput
             value={username}
             onChangeText={setUsername}
