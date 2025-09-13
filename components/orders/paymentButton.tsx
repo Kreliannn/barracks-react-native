@@ -3,7 +3,7 @@ import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { Picker } from "@react-native-picker/picker";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   Image,
@@ -15,9 +15,16 @@ import {
 } from "react-native";
 
 
+
+
+
+
+
 export default function PaymentButton({ order, setOrders }:  { order: getOrdersInterface, setOrders :  React.Dispatch<React.SetStateAction<getOrdersInterface[]>> }) {
      const [visible, setVisible] = useState(false);
     const [payment, setPayment] = useState(0);
+
+    const queryClient = useQueryClient();
 
     const [paymentMethod, setPaymentMethod] = useState("cash")
 
@@ -32,6 +39,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
                 setOrders(response.data)
                 setPayment(0)
                 setVisible(false)
+                queryClient.invalidateQueries({ queryKey: ["receipt"] });
             },
             onError: (err) => {
                 errorAlert("error")

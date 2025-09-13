@@ -4,9 +4,12 @@ import useTableStore from "@/store/table.store";
 import useUserStore from "@/store/user.store";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
+
+
+
 
 
 export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
@@ -14,6 +17,10 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
   const { user } = useUserStore();
   const { table, setTable } = useTableStore();
   const { addTable } = useActiveTableStore();
+
+  const queryClient = useQueryClient();
+
+
 
   const [open, setOpen] = useState(false);
   const [orderType, setOrderType] = useState("dine in");
@@ -28,12 +35,13 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
   const mutation = useMutation({
     mutationFn: (data: any) => axiosInstance.post("/order", data),
     onSuccess: () => {
-      setOpen(false);
-      clearOrders();
-     successAlert( "Order placed successfully!");
+        setOpen(false);
+        clearOrders();
+        successAlert( "Order placed successfully!");
+        queryClient.invalidateQueries({ queryKey: ["order"] });
     },
     onError: () => {
-     errorAlert( "Something went wrong while placing the order.");
+        errorAlert( "Something went wrong while placing the order.");
     },
   });
 
