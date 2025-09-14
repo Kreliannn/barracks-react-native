@@ -1,4 +1,5 @@
 import "@/global.css";
+import { BluetoothProvider } from "@/provider/bluetoothProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router";
@@ -15,11 +16,13 @@ export default function RootLayout() {
     }, []);
   return (
        <QueryClientProvider client={queryClient}>
+          <BluetoothProvider >
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" options={{ title: "index" }} />
               <Stack.Screen name="(drawer)" />
             </Stack>
             <Toast />
+         </BluetoothProvider>
        </QueryClientProvider>
   );
 }

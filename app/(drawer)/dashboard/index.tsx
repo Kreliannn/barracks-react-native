@@ -1,11 +1,26 @@
+import { useBluetooth } from "@/provider/bluetoothProvider";
 import useUserStore from "@/store/user.store";
+import { errorAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Button, Image, Text, View } from "react-native";
+//@ts-ignore
+import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
+
 
 export default function Index() {
   const { user } = useUserStore();
+
+  const { connectedDevice } = useBluetooth();
+
+  const printReceipt = async () => {
+    if (!connectedDevice) {
+      errorAlert("No device connected");
+      return;
+    }
+    await BluetoothEscposPrinter.printText("Hello from Page 2!\n\r", {});
+  };
 
   const [dashboardData, setDashboardData] = useState({
     activeTatble: 0,
@@ -24,16 +39,23 @@ export default function Index() {
   return (
 <View className="flex-1 bg-gradient-to-r from-green-900 to-emerald-900 flex-row">
   {/* Left Side: Banner */}
-  <View className="w-1/3">
+  <View className="w-1/3" >
     <Image
       source={require("@/assets/logo.jpg")}
       className="w-full h-full"
       resizeMode="cover"
+      
     />
   </View>
 
   {/* Right Side: Dashboard */}
   <View className="w-2/3 px-6 py-6">
+
+
+    <View>
+      <Button title="Print" onPress={printReceipt} disabled={!connectedDevice} />
+    </View>
+
     {/* Cashier Info */}
     <Text className="text-green-900 text-3xl font-extrabold mb-3">
       Cashier Dashboard
