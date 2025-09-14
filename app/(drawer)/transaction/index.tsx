@@ -8,12 +8,12 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface salesInterface  {
-  cash: number,
-  debitCard: number,
-  gcash: number,
-  payMaya: number,
-  grabPayment: number,
-  chequePayment: number,
+  cash:  { sales : number, qty : number},
+  debitCard:  { sales : number, qty : number},
+  gcash:  { sales : number, qty : number},
+  payMaya:  { sales : number, qty : number},
+  grabPayment:  { sales : number, qty : number},
+  chequePayment:  { sales : number, qty : number},
   totalSales: number,
   totalVat : number,
   serviceFee : number
@@ -37,12 +37,12 @@ export default function TransactionPage() {
     if(!user) return
 
     const sales : salesInterface = {
-      cash: 0,
-      debitCard: 0,
-      gcash: 0,
-      payMaya: 0,
-      grabPayment: 0,
-      chequePayment: 0,
+      cash: { sales : 0, qty : 0},
+      debitCard: { sales : 0, qty : 0},
+      gcash: { sales : 0, qty : 0},
+      payMaya: { sales : 0, qty : 0},
+      grabPayment: { sales : 0, qty : 0},
+      chequePayment: { sales : 0, qty : 0},
       totalSales: 0,
       totalVat : 0,
       serviceFee : 0
@@ -50,12 +50,12 @@ export default function TransactionPage() {
 
     orders.forEach((order) => {
       switch (order.paymentMethod) {
-        case "cash": sales.cash += order.grandTotal; break;
-        case "debitCard": sales.debitCard += order.grandTotal; break;
-        case "gcash": sales.gcash += order.grandTotal; break;
-        case "payMaya": sales.payMaya += order.grandTotal; break;
-        case "grabPayment": sales.grabPayment += order.grandTotal; break;
-        case "chequePayment": sales.chequePayment += order.grandTotal; break;
+        case "cash": sales.cash.sales += order.grandTotal; sales.cash.qty += 1;   break;
+        case "debitCard": sales.debitCard.sales += order.grandTotal; sales.debitCard.qty += 1; break;
+        case "gcash": sales.gcash.sales += order.grandTotal; sales.gcash.qty += 1; break;
+        case "payMaya": sales.payMaya.sales += order.grandTotal; sales.payMaya.qty += 1; break;
+        case "grabPayment": sales.grabPayment.sales += order.grandTotal; sales.grabPayment.qty += 1; break;
+        case "chequePayment": sales.chequePayment.sales += order.grandTotal; sales.chequePayment.qty += 1; break;
       }
       sales.totalSales += order.grandTotal;
       sales.totalVat += order.vat

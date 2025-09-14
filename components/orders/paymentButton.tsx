@@ -1,3 +1,4 @@
+import { useBluetooth } from "@/provider/bluetoothProvider";
 import useActiveTableStore from "@/store/activeTable.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
@@ -19,10 +20,11 @@ import {
 
 
 
-
 export default function PaymentButton({ order, setOrders }:  { order: getOrdersInterface, setOrders :  React.Dispatch<React.SetStateAction<getOrdersInterface[]>> }) {
      const [visible, setVisible] = useState(false);
     const [payment, setPayment] = useState(0);
+
+    const {connectedDevice} = useBluetooth()
 
     const queryClient = useQueryClient();
 
@@ -63,7 +65,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
   return (
     <>
       {/* Trigger Button */}
-      <TouchableOpacity className="bg-white py-2 px-4 rounded-md flex-1"  onPress={() => setVisible(true)}>
+      <TouchableOpacity className={`bg-white py-2 px-4 rounded-md flex-1 ${!connectedDevice && "hidden"}`}  onPress={() => setVisible(true)}>
              <Text className="text-center font-semibold text-green-900">Payment</Text>
        </TouchableOpacity>
   

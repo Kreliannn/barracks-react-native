@@ -1,10 +1,10 @@
+import PrintQrComponent from "@/components/dashboard/printQr";
 import { useBluetooth } from "@/provider/bluetoothProvider";
 import useUserStore from "@/store/user.store";
 import axiosInstance from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
-
 
 export default function Index() {
   const { user } = useUserStore();
@@ -40,12 +40,20 @@ export default function Index() {
   {/* Right Side: Dashboard */}
   <View className="w-2/3 px-6 py-6">
 
+  
 
 
     {/* Cashier Info */}
-    <Text className="text-green-900 text-3xl font-extrabold mb-3">
-      Cashier Dashboard
-    </Text>
+    <View className="flex-row items-center justify-between mb-3">
+      <Text className="text-green-900 text-3xl font-extrabold">
+        Cashier Dashboard
+      </Text>
+
+      {user!.branch == "Main Branch" && (
+        <PrintQrComponent />
+      )}
+    </View>
+
     <View className="bg-white/10 rounded-xl p-4 mb-6">
       <Text className="text-green-800 text-xl font-semibold">
         cashier: {user?.fullname || "Not Found"}

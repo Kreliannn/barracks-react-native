@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "barracks-mobile-app",
+    "name": "The Barracks",
     "slug": "barracks-mobile-app",
     "version": "1.0.0",
     "orientation": "landscape",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icon.png", 
     "scheme": "barracksmobileapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

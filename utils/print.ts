@@ -1,7 +1,6 @@
 
 import { getIngredientsInterface } from "@/types/ingredient.type";
 import { menuIngredientsInterface } from "@/types/menu.type";
-
 import { Image } from "react-native";
 //@ts-ignore
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
@@ -11,12 +10,12 @@ const logo = require("@/assets/barracks.png")
 
 
 interface salesInterface  {
-  cash: number,
-  debitCard: number,
-  gcash: number,
-  payMaya: number,
-  grabPayment: number,
-  chequePayment: number,
+  cash:  { sales : number, qty : number},
+  debitCard:  { sales : number, qty : number},
+  gcash:  { sales : number, qty : number},
+  payMaya:  { sales : number, qty : number},
+  grabPayment:  { sales : number, qty : number},
+  chequePayment:  { sales : number, qty : number},
   totalSales: number,
   totalVat : number,
   serviceFee : number
@@ -24,9 +23,10 @@ interface salesInterface  {
 
 
 
+
 export const printBill = async (order: ordersInterface) => {
     
-  const asset = Image.resolveAssetSource(logo);
+   const asset = Image.resolveAssetSource(logo);
 
     
     const response = await fetch(asset.uri);
@@ -78,7 +78,7 @@ export const printBill = async (order: ordersInterface) => {
     await BluetoothEscposPrinter.printText(`VAT (12%):               ${order.vat.toFixed(2)}\n`, {});
     await BluetoothEscposPrinter.printText(`Service Charge (10%):    ${order.serviceFee.toFixed(2)}\n`, {});
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
-    await BluetoothEscposPrinter.printText(`GRAND TOTAL:             ${order.grandTotal.toFixed(2)}\n`, {});
+    await BluetoothEscposPrinter.printText(`TOTAL BILL:             ${order.grandTotal.toFixed(2)}\n`, {});
     await BluetoothEscposPrinter.printText("================================\n\n\n", {});
 
 };
@@ -259,34 +259,44 @@ export const printXReading = async (sales: salesInterface, cashier: string) => {
 
     // Payment breakdown
     const payments = [
-      { name: "Cash", value: sales.cash },
-      { name: "Debit Card", value: sales.debitCard },
-      { name: "GCash", value: sales.gcash },
-      { name: "PayMaya", value: sales.payMaya },
-      { name: "GrabPay", value: sales.grabPayment },
-      { name: "Cheque", value: sales.chequePayment },
+      { name: "Cash", sales: sales.cash.sales, qty: sales.cash.qty },
+      { name: "Debit Card", sales: sales.debitCard.sales, qty: sales.debitCard.qty },
+      { name: "GCash", sales: sales.gcash.sales, qty: sales.gcash.qty },
+      { name: "PayMaya", sales: sales.payMaya.sales, qty: sales.payMaya.qty },
+      { name: "GrabPay", sales: sales.grabPayment.sales, qty: sales.grabPayment.qty },
+      { name: "Cheque", sales: sales.chequePayment.sales, qty: sales.chequePayment.qty },
     ];
 
+
     for (const p of payments) {
-      const label = p.name.padEnd(16); // left column
-      const value = p.value.toFixed(2).padStart(14); // right column
       await BluetoothEscposPrinter.printText("================================\n\r", {});
-      await BluetoothEscposPrinter.printText(`${label}${value}\n\r`, {});
+
+      // Row 1: Name + headers
+      const label = p.name.padEnd(12); 
+      const headers = "Qty".padEnd(3) + "Sales".padStart(14);
+      await BluetoothEscposPrinter.printText(label + headers + "\n\r", {});
+
+      // Row 2: Empty first col + values
+      const empty = "".padEnd(12);
+      const qty = String(p.qty).padEnd(3);
+      const sales = p.sales.toFixed(2).padStart(14);
+      await BluetoothEscposPrinter.printText(empty + qty + sales + "\n\r", {});
     }
+
 
     await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
 
     // Totals
     await BluetoothEscposPrinter.printText(
-      `Total Sales:     ${sales.totalSales.toFixed(2).padStart(14)}\n\r`,
+      `Total Sales:   ${sales.totalSales.toFixed(2).padStart(14)}\n\r`,
       {}
     );
     await BluetoothEscposPrinter.printText(
-      `VAT (12%):       ${sales.totalVat.toFixed(2).padStart(14)}\n\r`,
+      `Total VAT:     ${sales.totalVat.toFixed(2).padStart(14)}\n\r`,
       {}
     );
     await BluetoothEscposPrinter.printText(
-      `Service Fee:     ${sales.serviceFee.toFixed(2).padStart(14)}\n\r`,
+      `Service Fee:   ${sales.serviceFee.toFixed(2).padStart(14)}\n\r`,
       {}
     );
 
@@ -294,4 +304,12 @@ export const printXReading = async (sales: salesInterface, cashier: string) => {
   } catch (err) {
     console.log("X Reading Print error:", err);
   }
-};
+}
+
+
+
+
+export default function PrintQr({ id, branch, manager, date }: any) {
+
+
+}
