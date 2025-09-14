@@ -1,12 +1,28 @@
 import ViewButton from '@/components/transaction/viewButton';
+import useUserStore from '@/store/user.store';
 import { getOrdersInterface } from '@/types/orders.type';
 import axiosInstance from '@/utils/axios';
+import { printXReading } from '@/utils/print';
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
+interface salesInterface  {
+  cash: number,
+  debitCard: number,
+  gcash: number,
+  payMaya: number,
+  grabPayment: number,
+  chequePayment: number,
+  totalSales: number,
+  totalVat : number,
+  serviceFee : number
+}
+
 export default function TransactionPage() {
   const [orders, setOrders] = useState<getOrdersInterface[]>([]);
+
+  const {user} = useUserStore()
 
   const { data } = useQuery({
     queryKey: ["receipt"],
@@ -17,16 +33,21 @@ export default function TransactionPage() {
     if (data?.data) setOrders(data?.data.reverse());
   }, [data]);
 
-  const printXreading = () => {
-    const sales = {
+  const handleXreading = () => {
+    if(!user) return
+
+    const sales : salesInterface = {
       cash: 0,
       debitCard: 0,
       gcash: 0,
       payMaya: 0,
       grabPayment: 0,
       chequePayment: 0,
-      totalSales: 0
+      totalSales: 0,
+      totalVat : 0,
+      serviceFee : 0
     };
+
     orders.forEach((order) => {
       switch (order.paymentMethod) {
         case "cash": sales.cash += order.grandTotal; break;
@@ -37,9 +58,13 @@ export default function TransactionPage() {
         case "chequePayment": sales.chequePayment += order.grandTotal; break;
       }
       sales.totalSales += order.grandTotal;
+      sales.totalVat += order.vat
+      sales.serviceFee += order.serviceFee
     });
 
-    console.log(sales);
+    printXReading(sales, user.fullname)
+
+   
   };
 
   
@@ -53,7 +78,7 @@ export default function TransactionPage() {
               <Text className="text-sm text-stone-600 mt-1">View detailed records of all transactions</Text>
             </View>
             <TouchableOpacity
-              onPress={printXreading}
+              onPress={handleXreading}
               className="px-3 py-2 bg-emerald-600 rounded-lg"
             >
               <Text className="text-white font-semibold">X Reading</Text>

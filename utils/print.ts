@@ -9,30 +9,45 @@ import { orderInterface, ordersInterface } from "../types/orders.type";
 
 const logo = require("@/assets/barracks.png")
 
+
+interface salesInterface  {
+  cash: number,
+  debitCard: number,
+  gcash: number,
+  payMaya: number,
+  grabPayment: number,
+  chequePayment: number,
+  totalSales: number,
+  totalVat : number,
+  serviceFee : number
+}
+
+
+
 export const printBill = async (order: ordersInterface) => {
     
   const asset = Image.resolveAssetSource(logo);
 
-    // 2. Fetch the image and convert to blob
+    
     const response = await fetch(asset.uri);
     const blob = await response.blob();
 
-    // 3. Convert blob → Base64
+    
     const reader = new FileReader();
     reader.onloadend = async () => {
       {/* @ts-ignore */}
-      const base64Logo = reader.result.split(",")[1]; // strip "data:image/png;base64,"
+      const base64Logo = reader.result.split(",")[1]; 
 
-      // 4. Print the logo
+    
       await BluetoothEscposPrinter.printPic(base64Logo, {
-        width: 600, // adjust for printer
+        width: 600, 
         left: 0,
       });
     };
 
     reader.readAsDataURL(blob);
 
-    await BluetoothEscposPrinter.printText("\n\r", {}); // line break
+    await BluetoothEscposPrinter.printText("\n\r", {});
   
     await BluetoothEscposPrinter.printText("================================\n", {});
 
@@ -73,26 +88,26 @@ export const printReceipt = async (order: ordersInterface, cash : number) => {
     
   const asset = Image.resolveAssetSource(logo);
 
-    // 2. Fetch the image and convert to blob
+    
     const response = await fetch(asset.uri);
     const blob = await response.blob();
 
-    // 3. Convert blob → Base64
+    
     const reader = new FileReader();
     reader.onloadend = async () => {
       {/* @ts-ignore */}
-      const base64Logo = reader.result.split(",")[1]; // strip "data:image/png;base64,"
+      const base64Logo = reader.result.split(",")[1]; 
 
-      // 4. Print the logo
+    
       await BluetoothEscposPrinter.printPic(base64Logo, {
-        width: 600, // adjust for printer
+        width: 600, 
         left: 0,
       });
     };
 
     reader.readAsDataURL(blob);
 
-    await BluetoothEscposPrinter.printText("\n\r", {}); // line break
+    await BluetoothEscposPrinter.printText("\n\r", {});
   
     await BluetoothEscposPrinter.printText("================================\n", {});
 
@@ -213,3 +228,70 @@ export const printRefill = async (connectedDevice : string ,ingridients : menuIn
 
     await BluetoothEscposPrinter.printText("\n\r------------------------\n\r\n\r", {});
 }
+
+
+
+
+export const printXReading = async (sales: salesInterface, cashier: string) => {
+  const now = new Date();
+  const formatted = now.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: true,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  try {
+    // Header
+    await BluetoothEscposPrinter.printText("X-READING REPORT\n\r", {
+      widthtimes: 1,
+      heigthtimes: 1,
+    });
+    await BluetoothEscposPrinter.printText("================================\n\r", {});
+
+    // Info
+    await BluetoothEscposPrinter.printText(`Date: ${formatted}\n\r`, {});
+    await BluetoothEscposPrinter.printText(`Printed By:   ${cashier}\n\r`, {});
+    await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+
+    // Payment breakdown
+    const payments = [
+      { name: "Cash", value: sales.cash },
+      { name: "Debit Card", value: sales.debitCard },
+      { name: "GCash", value: sales.gcash },
+      { name: "PayMaya", value: sales.payMaya },
+      { name: "GrabPay", value: sales.grabPayment },
+      { name: "Cheque", value: sales.chequePayment },
+    ];
+
+    for (const p of payments) {
+      const label = p.name.padEnd(16); // left column
+      const value = p.value.toFixed(2).padStart(14); // right column
+      await BluetoothEscposPrinter.printText("================================\n\r", {});
+      await BluetoothEscposPrinter.printText(`${label}${value}\n\r`, {});
+    }
+
+    await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+
+    // Totals
+    await BluetoothEscposPrinter.printText(
+      `Total Sales:     ${sales.totalSales.toFixed(2).padStart(14)}\n\r`,
+      {}
+    );
+    await BluetoothEscposPrinter.printText(
+      `VAT (12%):       ${sales.totalVat.toFixed(2).padStart(14)}\n\r`,
+      {}
+    );
+    await BluetoothEscposPrinter.printText(
+      `Service Fee:     ${sales.serviceFee.toFixed(2).padStart(14)}\n\r`,
+      {}
+    );
+
+    await BluetoothEscposPrinter.printText("================================\n\r\n\r", {});
+  } catch (err) {
+    console.log("X Reading Print error:", err);
+  }
+};
