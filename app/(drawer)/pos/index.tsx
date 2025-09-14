@@ -8,11 +8,14 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 
+
 const types = [ "All", "Ala carte", "Unli", "Sizzling", "Pulutan", "Beverage", "Others"]
 
 export default function PosPage() {
  
   const { table, setTable } = useTableStore()
+
+
 
    const [menuData, setMenuData] = useState<getMenuInterface[]>([])
     const [menu, setMenu] = useState<getMenuInterface[]>([])
@@ -37,6 +40,8 @@ export default function PosPage() {
 
     const { width } = Dimensions.get("window");
     const cardWidth = width / 4 - 20; 
+
+
 
 
     if(!table) return <TablesPage  />

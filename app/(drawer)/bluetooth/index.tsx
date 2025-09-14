@@ -11,7 +11,6 @@ export default function PrintTest() {
   useEffect(() => {
     BluetoothManager.enableBluetooth()
       .then((paired: any) => {
-        console.log("Raw paired devices:", paired);
 
         // Parse JSON strings into objects
         const parsedDevices = paired.map((d: string) => {
@@ -22,7 +21,6 @@ export default function PrintTest() {
           }
         }).filter(Boolean); // remove nulls if parsing fails
 
-        console.log("Parsed devices:", parsedDevices);
         setDevices(parsedDevices);
       })
       .catch(() => {
@@ -61,36 +59,36 @@ export default function PrintTest() {
         keyExtractor={(item) => item.address}
         renderItem={({ item }) => {
 
-          if(item.name  != "MPT-II") return null
+         // if(item.name  != "MPT-II") return null
           
           const isConnected = item.name === connectedDevice;
 
-          console.log(connectedDevice)
          
           return (
-            <TouchableOpacity
-              onPress={() => connectDevice(item)}
-              style={{
+           <TouchableOpacity
+            onPress={() => connectDevice(item)}
+            style={{
                 padding: 15,
                 borderWidth: 1,
-                borderColor: isConnected ? "blue" : "#ccc",
+                borderColor: isConnected ? "green" : "#ccc", // changed to green
                 borderRadius: 5,
                 marginHorizontal: 20,
                 marginBottom: 10,
-                backgroundColor: isConnected ? "#e6f0ff" : "#f9f9f9", // light blue if connected
-              }}
+                backgroundColor: isConnected ? "#e6ffe6" : "#f9f9f9", // light green if connected
+            }}
             >
-              <Text
+            <Text
                 style={{
-                  fontSize: 16,
-                  color: isConnected ? "blue" : "black",
-                  fontWeight: isConnected ? "bold" : "normal",
+                fontSize: 16,
+                color: isConnected ? "green" : "black", // changed to green
+                fontWeight: isConnected ? "bold" : "normal",
                 }}
-              >
+            >
                 {item.name || "Unknown Device"}
-              </Text>
-              <Text style={{ fontSize: 12, color: "gray" }}>{item.address}</Text>
+            </Text>
+            <Text style={{ fontSize: 12, color: "gray" }}>{item.address}</Text>
             </TouchableOpacity>
+
           );
         }}
         contentContainerStyle={{

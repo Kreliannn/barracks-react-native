@@ -1,8 +1,10 @@
 import OrderList from '@/components/orders/orderList';
 import PaymentButton from '@/components/orders/paymentButton';
 import RefillButton from '@/components/orders/refillButton';
+import { useBluetooth } from '@/provider/bluetoothProvider';
 import { getOrdersInterface } from '@/types/orders.type';
 import axiosInstance from '@/utils/axios';
+import { printBill } from '@/utils/print';
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
@@ -19,6 +21,10 @@ export default function OrdersPage() {
     if (data?.data) setOrders(data?.data);
   }, [data]);
 
+  const {connectedDevice} = useBluetooth()
+
+
+  
 
   return (
     <View className="h-full w-full flex-col">
@@ -104,8 +110,12 @@ export default function OrdersPage() {
 
             {/* Footer */}
             <View className="p-4 bg-green-900 flex-row gap-2">
-                <TouchableOpacity className="bg-white py-2 px-4 rounded-md w-[30%]">
-                <Text className="text-center font-semibold text-green-900">Bill Out</Text>
+                <TouchableOpacity 
+                  disabled={!connectedDevice}
+                  className={`bg-white py-2 px-4 rounded-md w-[30%] ${!connectedDevice && "hidden"}` }
+                  onPress={() => printBill(order)}
+                >
+                  <Text className="text-center font-semibold text-green-900">Bill Out</Text>
                 </TouchableOpacity>
                 <PaymentButton order={order} setOrders={setOrders}  />
             </View>

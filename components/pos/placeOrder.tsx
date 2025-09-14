@@ -1,14 +1,14 @@
+import { useBluetooth } from "@/provider/bluetoothProvider";
 import useActiveTableStore from "@/store/activeTable.store";
 import useOrderStore from "@/store/cart.store";
 import useTableStore from "@/store/table.store";
 import useUserStore from "@/store/user.store";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
+import { printForKitchen } from "@/utils/print";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
-
-
 
 
 
@@ -17,6 +17,8 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
   const { user } = useUserStore();
   const { table, setTable } = useTableStore();
   const { addTable } = useActiveTableStore();
+
+  const {connectedDevice} = useBluetooth()
 
   const queryClient = useQueryClient();
 
@@ -45,8 +47,9 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
     },
   });
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!user?.fullname || !user?.branch) return Alert.alert("No user");
+    if(!connectedDevice)return Alert.alert("No printer");
 
     const formattedDate = new Date().toISOString().split("T")[0];
 
@@ -71,6 +74,8 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
     addTable(table);
     setTable("");
     mutation.mutate(orderData);
+    printForKitchen(connectedDevice , orders, table)
+  
   };
 
   return (
@@ -88,7 +93,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
       {/* Modal */}
       <Modal
         visible={open}
-        animationType="slide"
+        animationType="fade"
         transparent
         onRequestClose={() => setOpen(false)}
       >
@@ -128,10 +133,11 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
             {/* Place Order Button */}
             <TouchableOpacity
               onPress={handlePlaceOrder}
-              className="bg-green-500 py-3 rounded-lg shadow"
+              className={` py-3 rounded-lg shadow disabled ${connectedDevice ? "bg-green-500" : "bg-gray-600"}`}
+              disabled={!connectedDevice}
             >
               <Text className="text-center text-white font-bold text-lg">
-                Place Order
+                {connectedDevice ? "Place Order" : "No Printer Connection"}
               </Text>
             </TouchableOpacity>
           </View>

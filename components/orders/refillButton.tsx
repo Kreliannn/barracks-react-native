@@ -1,21 +1,23 @@
+import { useBluetooth } from "@/provider/bluetoothProvider";
 import {
-    getIngredientsInterface,
-    ingredientsInterface,
+  getIngredientsInterface,
+  ingredientsInterface,
 } from "@/types/ingredient.type";
 import { menuIngredientsInterface } from "@/types/menu.type";
 import { orderInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
+import { printRefill } from "@/utils/print";
+import { Picker } from "@react-native-picker/picker";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
-    Modal,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  Modal,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-
 
 export default function RefillButton({
   table,
@@ -30,7 +32,8 @@ export default function RefillButton({
   const [ingredientsData, setIngredientsData] = useState<getIngredientsInterface[]>([]);
   const [ingredientSelect, setIngredientSelect] = useState("all");
   const [quantity, setQuantity] = useState(1);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const { connectedDevice } = useBluetooth();
 
   const { data } = useQuery({
     queryKey: ["ingredients"],
@@ -56,15 +59,15 @@ export default function RefillButton({
       setVisible(false);
     },
     onError: () => {
-        errorAlert("error")
-        setVisible(false);
+      errorAlert("error");
+      setVisible(false);
     },
   });
 
   const addIngredientHandler = () => {
     if (ingredientSelect === "all") {
-        setVisible(false);
-        return errorAlert("select ingredient");
+      setVisible(false);
+      return errorAlert("select ingredient");
     }
 
     let extraqty = 0;
@@ -95,10 +98,12 @@ export default function RefillButton({
 
   const refillHandler = () => {
     if (!ingredients.length) {
-        setVisible(false)
-        return errorAlert("empty item");
+      setVisible(false);
+      return errorAlert("empty item");
     }
+    if (!connectedDevice) return errorAlert("no bluetooth");
     mutation.mutate(ingredients);
+    printRefill(connectedDevice, ingredients, ingredientsData, table);
   };
 
   return (
@@ -106,7 +111,8 @@ export default function RefillButton({
       {/* Trigger Button */}
       <TouchableOpacity
         onPress={() => setVisible(true)}
-        className="bg-white rounded-md px-3 py-2"
+        disabled={!connectedDevice}
+        className={`bg-white rounded-md px-3 py-2 ${!connectedDevice && "hidden"}` }
       >
         <Text className="text-sm font-semibold text-green-900">Refill</Text>
       </TouchableOpacity>
@@ -117,136 +123,115 @@ export default function RefillButton({
         animationType="slide"
         visible={visible}
         onRequestClose={() => setVisible(false)}
-        >
+      >
         <View className="flex-1 bg-black/50 justify-center items-center">
-            <View className="w-[90%] h-[80%] bg-white rounded-2xl p-6">
+          <View className="w-[90%] h-[80%] bg-white rounded-2xl p-6">
             {/* Header with close button */}
             <View className="flex-row justify-between items-start mb-4">
-                <View>
+              <View>
                 <Text className="text-xl font-bold mb-1">Refill For {table}</Text>
-                <Text className="text-sm text-gray-500">
-                    Select refill item
-                </Text>
-                </View>
-                <TouchableOpacity
+                <Text className="text-sm text-gray-500">Select refill item</Text>
+              </View>
+              <TouchableOpacity
                 onPress={() => setVisible(false)}
                 className="p-2 -mt-2 -mr-2"
-                >
+              >
                 <Text className="text-xl font-bold text-gray-500">×</Text>
-                </TouchableOpacity>
+              </TouchableOpacity>
             </View>
 
             {/* Content */}
             <ScrollView className="flex-1">
-                <Text className="text-sm font-medium text-gray-700 mb-3">
+              <Text className="text-sm font-medium text-gray-700 mb-3">
                 Refill Option
-                </Text>
+              </Text>
 
-                {/* Ingredient selection row */}
-                <View className="flex-row items-center gap-2 mb-4">
-                {/* Dropdown substitute */}
-                <TouchableOpacity
-                    onPress={() => setDropdownVisible(!dropdownVisible)}
-                    className="flex-1 border rounded px-3 py-2"
-                >
-                    <Text>
-                    {ingredientSelect === "all"
-                        ? "Select Ingredient"
-                        : ingredientsData.find((i) => i._id === ingredientSelect)
-                            ?.name}
-                    </Text>
-                </TouchableOpacity>
+              {/* Ingredient selection row using Picker */}
+              <View className="flex-row items-center gap-2 mb-4">
+                <View className="flex-1 border rounded px-3 py-2">
+                  <Picker
+                    selectedValue={ingredientSelect}
+                    onValueChange={(value) => setIngredientSelect(value)}
+                  >
+                    <Picker.Item label="Select Ingredient" value="all" />
+                    {ingredientsData.map((item) => (
+                      <Picker.Item key={item._id} label={item.name} value={item._id} />
+                    ))}
+                  </Picker>
+                </View>
 
                 {/* Quantity controls */}
                 <View className="flex-row items-center border rounded">
-                    <TouchableOpacity
+                  <TouchableOpacity
                     onPress={decrementQuantity}
                     disabled={quantity <= 1}
                     className="p-2"
-                    >
+                  >
                     <Text className="text-lg font-bold">-</Text>
-                    </TouchableOpacity>
-                    <Text className="px-3 min-w-[40px] text-center">{quantity}</Text>
-                    <TouchableOpacity onPress={incrementQuantity} className="p-2">
+                  </TouchableOpacity>
+                  <Text className="px-3 min-w-[40px] text-center">{quantity}</Text>
+                  <TouchableOpacity onPress={incrementQuantity} className="p-2">
                     <Text className="text-lg font-bold">+</Text>
-                    </TouchableOpacity>
+                  </TouchableOpacity>
                 </View>
 
                 {/* Add button */}
                 <TouchableOpacity
-                    onPress={addIngredientHandler}
-                    className="px-4 py-2 bg-emerald-500 rounded"
+                  onPress={addIngredientHandler}
+                  disabled={ingredientSelect === "all"}
+                  className={`px-4 py-2 bg-emerald-500 rounded ${ingredientSelect === "all" && "bg-gray-600"}` }
                 >
-                    <Text className="text-white font-medium">Add</Text>
+                  <Text className="text-white font-medium">Add</Text>
                 </TouchableOpacity>
-                </View>
+              </View>
 
-                {/* Dropdown options */}
-                {dropdownVisible && (
-                <View className="border rounded mb-4 bg-white shadow-sm">
-                    {ingredientsData.map((item) => (
-                    <TouchableOpacity
-                        key={item._id}
-                        onPress={() => {
-                        setIngredientSelect(item._id);
-                        setDropdownVisible(false);
-                        }}
-                        className="px-3 py-3 border-b border-gray-100 last:border-b-0"
-                    >
-                        <Text>{item.name}</Text>
-                    </TouchableOpacity>
-                    ))}
-                </View>
-                )}
-
-                {/* Selected Ingredients */}
-                {ingredients.length > 0 && (
+              {/* Selected Ingredients */}
+              {ingredients.length > 0 && (
                 <View className="mt-2">
-                    <Text className="text-sm font-medium text-gray-700 mb-2">
+                  <Text className="text-sm font-medium text-gray-700 mb-2">
                     Selected Items
-                    </Text>
-                    <View className="space-y-2">
+                  </Text>
+                  <View className="space-y-2">
                     {ingredients.map((item) => {
-                        const res = ingredientsData.find(
-                        (ing) => ing._id === item.id
-                        );
-                        return (
+                      const res = ingredientsData.find((ing) => ing._id === item.id);
+                      return (
                         <View
-                            key={item.id}
-                            className="flex-row items-center justify-between border p-3 rounded-lg bg-gray-50 mb-2"
+                          key={item.id}
+                          className="flex-row items-center justify-between border p-3 rounded-lg bg-gray-50 mb-2"
                         >
-                            <Text className="text-sm flex-1">
+                          <Text className="text-sm flex-1">
                             {item.qty} Order of {res?.name}
-                            </Text>
-                            <TouchableOpacity 
+                          </Text>
+                          <TouchableOpacity
                             onPress={() => removeItemHandler(item.id)}
                             className="ml-2 p-1"
-                            >
+                          >
                             <Text className="text-red-500 font-bold text-lg">×</Text>
-                            </TouchableOpacity>
+                          </TouchableOpacity>
                         </View>
-                        );
+                      );
                     })}
-                    </View>
+                  </View>
                 </View>
-                )}
+              )}
             </ScrollView>
 
             {/* Footer - Only Submit button */}
             <View className="mt-4">
-                <TouchableOpacity
+              <TouchableOpacity
                 onPress={refillHandler}
-                disabled={mutation.isPending}
-                className="w-full py-3 bg-emerald-600 rounded-lg"
-                >
+                disabled={mutation.isPending || !connectedDevice}
+                className={`w-full py-3 bg-emerald-600 rounded-lg ${!connectedDevice && "bg-gray-600"}` }
+            
+              >
                 <Text className="text-center text-white font-medium">
-                    {mutation.isPending ? "Loading..." : "Submit"}
+                  {mutation.isPending ? "Loading..." : "Submit"}
                 </Text>
-                </TouchableOpacity>
+              </TouchableOpacity>
             </View>
-            </View>
+          </View>
         </View>
-        </Modal>
+      </Modal>
     </>
   );
 }
