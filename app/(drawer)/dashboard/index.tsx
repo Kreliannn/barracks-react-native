@@ -1,26 +1,15 @@
 import { useBluetooth } from "@/provider/bluetoothProvider";
 import useUserStore from "@/store/user.store";
-import { errorAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Button, Image, Text, View } from "react-native";
-//@ts-ignore
-import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
+import { Image, Text, View } from "react-native";
 
 
 export default function Index() {
   const { user } = useUserStore();
 
   const { connectedDevice } = useBluetooth();
-
-  const printReceipt = async () => {
-    if (!connectedDevice) {
-      errorAlert("No device connected");
-      return;
-    }
-    await BluetoothEscposPrinter.printText("Hello from Page 2!\n\r", {});
-  };
 
   const [dashboardData, setDashboardData] = useState({
     activeTatble: 0,
@@ -52,9 +41,6 @@ export default function Index() {
   <View className="w-2/3 px-6 py-6">
 
 
-    <View>
-      <Button title="Print" onPress={printReceipt} disabled={!connectedDevice} />
-    </View>
 
     {/* Cashier Info */}
     <Text className="text-green-900 text-3xl font-extrabold mb-3">

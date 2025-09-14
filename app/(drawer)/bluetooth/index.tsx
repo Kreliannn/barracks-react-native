@@ -1,26 +1,26 @@
 import { useBluetooth } from "@/provider/bluetoothProvider";
 import React, { useEffect, useState } from "react";
-import { Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Switch, Text, TouchableOpacity, View } from "react-native";
 //@ts-ignore
 import { BluetoothManager } from "react-native-bluetooth-escpos-printer";
 
 export default function PrintTest() {
   const [devices, setDevices] = useState<any[]>([]);
-  const {setConnectedDevice, connectedDevice} = useBluetooth()
+  const [showAll, setShowAll] = useState(false); // toggle state
+  const { setConnectedDevice, connectedDevice } = useBluetooth();
 
   useEffect(() => {
     BluetoothManager.enableBluetooth()
       .then((paired: any) => {
-
-        // Parse JSON strings into objects
-        const parsedDevices = paired.map((d: string) => {
-          try {
-            return JSON.parse(d);
-          } catch {
-            return null;
-          }
-        }).filter(Boolean); // remove nulls if parsing fails
-
+        const parsedDevices = paired
+          .map((d: string) => {
+            try {
+              return JSON.parse(d);
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean);
         setDevices(parsedDevices);
       })
       .catch(() => {
@@ -39,66 +39,66 @@ export default function PrintTest() {
       });
   };
 
-
+  // Filter devices based on toggle
+  const visibleDevices = showAll ? devices : devices.filter(d => d.name === "MPT-II");
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <Text
-        style={{
-          margin: 20,
-          fontSize: 18,
-          fontWeight: "bold",
-          color: "black",
+     <View
+        style={{    
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginHorizontal: 20,
+            marginVertical: 15,
         }}
-      >
-        Paired Bluetooth Devices:
-      </Text>
+        >
+        <Text style={{ fontSize: 18, fontWeight: "bold", color: "black" }}>
+            Paired Bluetooth Devices:
+        </Text>
 
-     <FlatList
-        data={devices}
+        <Switch
+            value={showAll}
+            onValueChange={(val) => setShowAll(val)}
+        />
+        </View>
+
+
+      <FlatList
+        data={visibleDevices}
         keyExtractor={(item) => item.address}
         renderItem={({ item }) => {
-
-         // if(item.name  != "MPT-II") return null
-          
           const isConnected = item.name === connectedDevice;
-
-         
           return (
-           <TouchableOpacity
-            onPress={() => connectDevice(item)}
-            style={{
+            <TouchableOpacity
+              onPress={() => connectDevice(item)}
+              style={{
                 padding: 15,
                 borderWidth: 1,
-                borderColor: isConnected ? "green" : "#ccc", // changed to green
+                borderColor: isConnected ? "green" : "#ccc",
                 borderRadius: 5,
                 marginHorizontal: 20,
                 marginBottom: 10,
-                backgroundColor: isConnected ? "#e6ffe6" : "#f9f9f9", // light green if connected
-            }}
+                backgroundColor: isConnected ? "#e6ffe6" : "#f9f9f9",
+              }}
             >
-            <Text
+              <Text
                 style={{
-                fontSize: 16,
-                color: isConnected ? "green" : "black", // changed to green
-                fontWeight: isConnected ? "bold" : "normal",
+                  fontSize: 16,
+                  color: isConnected ? "green" : "black",
+                  fontWeight: isConnected ? "bold" : "normal",
                 }}
-            >
+              >
                 {item.name || "Unknown Device"}
-            </Text>
-            <Text style={{ fontSize: 12, color: "gray" }}>{item.address}</Text>
+              </Text>
+              <Text style={{ fontSize: 12, color: "gray" }}>{item.address}</Text>
             </TouchableOpacity>
-
           );
         }}
-        contentContainerStyle={{
-          paddingBottom: 100, // extra space at bottom
-        }}
+        contentContainerStyle={{ paddingBottom: 100 }}
       />
 
-
       <View style={{ padding: 20 }}>
-      
         {connectedDevice && (
           <Text style={{ marginTop: 10, fontSize: 14, color: "green" }}>
             Connected to: {connectedDevice}
