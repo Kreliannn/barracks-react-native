@@ -1,3 +1,4 @@
+import { useBluetooth } from "@/provider/bluetoothProvider";
 import { getRequestInterface } from "@/types/request.type";
 import axiosInstance from "@/utils/axios";
 import PrintQr from "@/utils/print";
@@ -9,15 +10,19 @@ export default function PrintQrComponent() {
   const [visible, setVisible] = useState(false);
   const [request, setRequest] = useState<getRequestInterface[]>([]);
 
+  const {connectedDevice} = useBluetooth()
+
   const { data } = useQuery({
     queryKey: ["request"],
     queryFn: () => axiosInstance.get("/request/branch"),
+    refetchInterval: 5000,
   });
 
   useEffect(() => {
     if (data?.data) {
       const res: getRequestInterface[] = data?.data;
       const filteredData = res.filter((item) => item.status == "to ship");
+      filteredData.reverse()
       setRequest(filteredData);
     }
   }, [data]);
@@ -74,8 +79,9 @@ export default function PrintQrComponent() {
                   </View>
 
                   <TouchableOpacity
+                    disabled={!connectedDevice}
                     onPress={() => handlePrint(item)}
-                    className="bg-emerald-600 px-4 py-2 rounded-lg"
+                    className={`bg-emerald-600 px-4 py-2 rounded-lg ${!connectedDevice && "bg-gray-600"}`}
                   >
                     <Text className="text-white font-semibold">Print QR</Text>
                   </TouchableOpacity>

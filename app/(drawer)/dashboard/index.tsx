@@ -1,15 +1,17 @@
 import PrintQrComponent from "@/components/dashboard/printQr";
-import { useBluetooth } from "@/provider/bluetoothProvider";
 import useUserStore from "@/store/user.store";
 import axiosInstance from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
-  const { user } = useUserStore();
+  const { user, clearUser } = useUserStore();
 
-  const { connectedDevice } = useBluetooth();
+
+
+  const router = useRouter()
 
   const [dashboardData, setDashboardData] = useState({
     activeTatble: 0,
@@ -24,6 +26,12 @@ export default function Index() {
   useEffect(() => {
     if (data?.data) setDashboardData(data?.data);
   }, [data]);
+
+  const logout = () => {
+    router.push("/"); 
+  }
+
+
 
   return (
 <View className="flex-1 bg-gradient-to-r from-green-900 to-emerald-900 flex-row">
@@ -52,6 +60,13 @@ export default function Index() {
       {user!.branch == "Main Branch" && (
         <PrintQrComponent />
       )}
+      
+     <TouchableOpacity
+        onPress={logout}
+        className="px-4 py-2 bg-red-500 rounded-lg"
+      >
+        <Text className="text-white font-semibold">Logout</Text>
+      </TouchableOpacity>
     </View>
 
     <View className="bg-white/10 rounded-xl p-4 mb-6">

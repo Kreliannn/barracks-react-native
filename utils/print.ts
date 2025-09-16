@@ -309,7 +309,12 @@ export const printXReading = async (sales: salesInterface, cashier: string) => {
 
 
 
-export default function PrintQr({ id, branch, manager, date }: any) {
-
-
+export default async function PrintQr({ id, branch, manager, date }: any) {
+  await BluetoothEscposPrinter.printText("================================\n\r\n\r", {});
+  await BluetoothEscposPrinter.printText(`Deliver to: ${branch}\n\r`, {});
+  await BluetoothEscposPrinter.printText(`Request By:   ${manager}\n\r`, {});
+  await BluetoothEscposPrinter.printText(`Date:   ${date}\n\r`, {});
+  await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+  await BluetoothEscposPrinter.printQRCode(id, 350, 1);
+  await BluetoothEscposPrinter.printText("================================\n\r\n\r", {});
 }
