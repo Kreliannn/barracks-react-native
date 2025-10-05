@@ -1,6 +1,9 @@
 import OrderList from '@/components/orders/orderList';
 import PaymentButton from '@/components/orders/paymentButton';
 import RefillButton from '@/components/orders/refillButton';
+import MergeOrders from '@/components/pos/mergeOrders';
+import MoveOrders from '@/components/pos/moveOrder';
+import SplitOrders from '@/components/pos/splitOrders';
 import { useBluetooth } from '@/provider/bluetoothProvider';
 import { getOrdersInterface } from '@/types/orders.type';
 import axiosInstance from '@/utils/axios';
@@ -46,7 +49,14 @@ export default function OrdersPage() {
           {/* Header */}
           <View className="bg-green-900 p-4 flex-row items-center justify-between">
             <Text className="text-xl font-bold text-white">{order.table}</Text>
-            <RefillButton table={order.table}  orders={order.orders} />
+
+            <View className='flex-row gap-1'>
+              <RefillButton table={order.table}  orders={order.orders} />
+              <SplitOrders order={order} setOrders={setOrders}/>
+              <MergeOrders id={order._id} orders={orders} setOrders={setOrders}/>
+              <MoveOrders order={order} setOrders={setOrders}  />
+            </View>
+            
           </View>
 
             { /* Order Info */}

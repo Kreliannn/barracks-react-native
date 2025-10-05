@@ -16,14 +16,11 @@ export default function TablesPage() {
   const { setTable } = useTableStore();
   const { activeTables } = useActiveTableStore();
 
-  // Screen dimensions
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-  // Reference design size (your PC design)
   const DESIGN_WIDTH = 1920;
   const DESIGN_HEIGHT = 1080;
 
-  // Scale factors
   const scaleX = screenWidth / DESIGN_WIDTH;
   const scaleY = screenHeight / DESIGN_HEIGHT;
 
@@ -37,12 +34,29 @@ export default function TablesPage() {
     if (data?.data) setPositions(data?.data);
   }, [data]);
 
+  const boxSize = 100 * Math.min(scaleX, scaleY) * 1.2;
+
   return (
-    <View className="flex-1 bg-stone-100 relative ">
+    <View className="flex-1 bg-stone-100 relative">
+      {/* ✅ No Table Box */}
+      <TouchableOpacity
+        onPress={() => setTable("No Table")}
+        style={{
+          position: "absolute",
+          right: 20,
+          top: 20,
+          width: boxSize,
+          height: boxSize,
+        }}
+        className="bg-white rounded-lg shadow-md items-center justify-center"
+      >
+        <Text className="font-semibold text-black text-xs">No Table</Text>
+      </TouchableOpacity>
+
+      {/* ✅ Table Boxes */}
       {positions.map((item) => {
         const scaledX = item.x * scaleX;
         const scaledY = item.y * scaleY;
-        const boxSize = 100 * Math.min(scaleX, scaleY) * 1.2; // scale box size
 
         return (
           <TouchableOpacity
@@ -63,7 +77,9 @@ export default function TablesPage() {
           >
             <Text
               className={`font-semibold text-xs ${
-                activeTables.includes(item.table) ? "text-white" : "text-black"
+                activeTables.includes(item.table)
+                  ? "text-white"
+                  : "text-black"
               }`}
             >
               {item.table}
