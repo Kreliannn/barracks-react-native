@@ -117,17 +117,21 @@ export default function MoveOrders({ order, setOrders }: { order: getOrdersInter
                     width: boxSize,
                     height: boxSize,
                   }}
-                  className={`rounded-lg shadow-md items-center justify-center ${
-                    activeTables.includes(item.table)
-                      ? "bg-gray-500"
-                      : order.table === item.table
+                 className={`rounded-lg shadow-md items-center justify-center 
+                  ${
+                    item.table === order.table
                       ? "bg-green-500"
+                      : activeTables.includes(item.table)
+                      ? "bg-gray-500"
                       : "bg-white"
-                  }`}
+                  }
+                `}
                 >
                   <Text
                     className={`font-semibold text-xs ${
-                      activeTables.includes(item.table) || order.table === item.table
+                      item.table === order.table
+                        ? "text-white"
+                        : activeTables.includes(item.table)
                         ? "text-white"
                         : "text-black"
                     }`}

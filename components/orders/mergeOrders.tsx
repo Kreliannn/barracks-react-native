@@ -1,17 +1,18 @@
 import useActiveTableStore from "@/store/activeTable.store";
 import { getOrdersInterface } from "@/types/orders.type";
-import { errorAlert } from "@/utils/alert";
+import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-    Dimensions,
-    Modal,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Modal,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+
 
 export default function MergeOrders({
   id,
@@ -39,6 +40,7 @@ export default function MergeOrders({
       setVisible(false);
       setSelectedOrders([]);
       setSelectedTables([]);
+      successAlert("order merge")
     },
     onError: () => errorAlert("Error merging tables"),
   });
@@ -83,9 +85,17 @@ export default function MergeOrders({
       >
         <View className="flex-1 justify-center items-center bg-black/50 p-4">
           <View
-            className="bg-white rounded-xl shadow-lg w-full p-5"
+            className="bg-white rounded-xl shadow-lg w-full p-5 relative"
             style={{ maxHeight: maxModalHeight }}
           >
+            {/* ❌ Close Button (top-right) */}
+            <TouchableOpacity
+              onPress={() => setVisible(false)}
+              className="absolute top-3 right-3 bg-red-500 rounded-full w-8 h-8 justify-center items-center"
+            >
+              <Text className="text-white text-lg font-bold">×</Text>
+            </TouchableOpacity>
+
             {/* Header */}
             <Text className="text-lg font-bold text-stone-800 mb-3 text-center">
               Merge Orders
@@ -97,51 +107,52 @@ export default function MergeOrders({
               contentContainerStyle={{ paddingBottom: 15 }}
             >
               {filteredOrders.length > 0 ? (
-                filteredOrders.map((order) => (
-                  <View
-                    key={order._id}
-                    className="bg-stone-100 rounded-lg p-3 mb-3"
-                  >
-                    <View className="flex-row justify-between items-center mb-2">
-                      <Text className="font-semibold text-stone-700">
-                        Table: {order.table}
-                      </Text>
-
-                      {/* Checkbox substitute */}
-                      <TouchableOpacity
-                        onPress={() =>
-                          toggleSelection(order._id, order.table)
-                        }
-                        className={`w-5 h-5 border-2 rounded ${
-                          selectedOrders.includes(order._id)
-                            ? "bg-emerald-600 border-emerald-600"
-                            : "border-gray-400"
-                        }`}
-                      />
-                    </View>
-
-                    <View className="flex-row justify-between mb-1">
-                      <Text className="text-gray-800 font-semibold">
-                        Orders
-                      </Text>
-                      <Text className="text-gray-800 font-semibold">Qty</Text>
-                    </View>
-
-                    {order.orders.map((item) => (
-                      <View
-                        key={item.item_id}
-                        className="flex-row justify-between"
-                      >
-                        <Text className="text-gray-500">{item.name}</Text>
-                        <Text className="text-gray-500">{item.qty}x</Text>
+                filteredOrders.map((order) => {
+                  const isSelected = selectedOrders.includes(order._id);
+                  return (
+                    <TouchableOpacity
+                      key={order._id}
+                      onPress={() => toggleSelection(order._id, order.table)}
+                      className={`rounded-lg p-3 mb-3 ${
+                        isSelected
+                          ? "border-2 border-emerald-600 bg-emerald-50"
+                          : "border border-gray-200 bg-stone-100"
+                      }`}
+                    >
+                      <View className="flex-row justify-between items-center mb-2">
+                        <Text className="font-semibold text-stone-700">
+                          Table: {order.table}
+                        </Text>
+                        {isSelected && (
+                          <Text className="text-emerald-600 font-bold text-sm">
+                            Selected
+                          </Text>
+                        )}
                       </View>
-                    ))}
 
-                    <Text className="text-emerald-600 font-bold mt-2">
-                      Bill: {order.grandTotal}
-                    </Text>
-                  </View>
-                ))
+                      <View className="flex-row justify-between mb-1">
+                        <Text className="text-gray-800 font-semibold">
+                          Orders
+                        </Text>
+                        <Text className="text-gray-800 font-semibold">Qty</Text>
+                      </View>
+
+                      {order.orders.map((item) => (
+                        <View
+                          key={item.item_id}
+                          className="flex-row justify-between"
+                        >
+                          <Text className="text-gray-500">{item.name}</Text>
+                          <Text className="text-gray-500">{item.qty}x</Text>
+                        </View>
+                      ))}
+
+                      <Text className="text-emerald-600 font-bold mt-2">
+                        Bill: {order.grandTotal}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })
               ) : (
                 <Text className="text-center text-gray-500">
                   No other orders available
@@ -150,25 +161,14 @@ export default function MergeOrders({
             </ScrollView>
 
             {/* Buttons */}
-            <View className="mt-3 gap-2">
-              <TouchableOpacity
-                onPress={mergeHandler}
-                className="bg-emerald-600 rounded-lg py-2"
-              >
-                <Text className="text-white text-center font-semibold">
-                  Merge Selected
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => setVisible(false)}
-                className="bg-red-600 rounded-lg py-2"
-              >
-                <Text className="text-white text-center font-semibold">
-                  Close
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={mergeHandler}
+              className="bg-emerald-600 rounded-lg py-2 mt-3"
+            >
+              <Text className="text-white text-center font-semibold">
+                Merge Selected
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
