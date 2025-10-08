@@ -6,11 +6,11 @@ import axiosInstance from "@/utils/axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
-    Dimensions,
-    Modal,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Modal,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 type TableData = {
@@ -89,7 +89,7 @@ export default function MoveOrders({ order, setOrders }: { order: getOrdersInter
 
             {/* ✅ “No Table” Box */}
             <TouchableOpacity
-              onPress={() => moveOrderHandler("No Table")}
+              onPress={() => moveOrderHandler("Take Away")}
               style={{
                 position: "absolute",
                 right: 20,
@@ -99,7 +99,7 @@ export default function MoveOrders({ order, setOrders }: { order: getOrdersInter
               }}
               className="bg-white rounded-lg shadow-md items-center justify-center"
             >
-              <Text className="font-semibold text-black text-xs">No Table</Text>
+              <Text className="font-semibold text-black text-xs">Take Away</Text>
             </TouchableOpacity>
 
             {/* ✅ Table Boxes */}

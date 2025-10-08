@@ -40,7 +40,7 @@ export default function TablesPage() {
     <View className="flex-1 bg-stone-100 relative">
       {/* ✅ No Table Box */}
       <TouchableOpacity
-        onPress={() => setTable("No Table")}
+        onPress={() => setTable("Take Away")}
         style={{
           position: "absolute",
           right: 20,
@@ -50,7 +50,7 @@ export default function TablesPage() {
         }}
         className="bg-white rounded-lg shadow-md items-center justify-center"
       >
-        <Text className="font-semibold text-black text-xs">No Table</Text>
+        <Text className="font-semibold text-black text-xs">Take Away</Text>
       </TouchableOpacity>
 
       {/* ✅ Table Boxes */}

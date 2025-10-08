@@ -1,9 +1,9 @@
+import MergeOrders from '@/components/orders/mergeOrders';
+import MoveOrders from '@/components/orders/moveOrder';
 import OrderList from '@/components/orders/orderList';
 import PaymentButton from '@/components/orders/paymentButton';
 import RefillButton from '@/components/orders/refillButton';
-import MergeOrders from '@/components/pos/mergeOrders';
-import MoveOrders from '@/components/pos/moveOrder';
-import SplitOrders from '@/components/pos/splitOrders';
+import SplitOrders from '@/components/orders/splitOrders';
 import { useBluetooth } from '@/provider/bluetoothProvider';
 import { getOrdersInterface } from '@/types/orders.type';
 import axiosInstance from '@/utils/axios';

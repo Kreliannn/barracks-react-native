@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
+
 interface salesInterface  {
   cash:  { sales : number, qty : number},
   debitCard:  { sales : number, qty : number},
