@@ -1,16 +1,17 @@
+import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-    Modal,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
-export default function CancelOrderbutton({ id, closeModal } : { id: string , closeModal : (isOpen : boolean) => void}) {
+export default function CancelOrderbutton({ order }: { order: getOrdersInterface }) {
   const [visible, setVisible] = useState(false);
   const [input, setInput] = useState("");
   const [isWrong, setIsWrong] = useState(false);
@@ -20,12 +21,11 @@ export default function CancelOrderbutton({ id, closeModal } : { id: string , cl
   const mutation = useMutation({
     mutationFn: (id: string) => axiosInstance.put("/order/cancel/" + id),
     onSuccess: () => {
-      successAlert("Order canceled");
+      successAlert( (order.status == "completed") ? "Order canceled" : "Status Changed")
       setVisible(false);
       queryClient.invalidateQueries({ queryKey: ["receipt"] });
       setInput("");
       setIsWrong(false);
-      closeModal(false)
     },
     onError: () => {
       errorAlert("Error canceling order");
@@ -35,7 +35,7 @@ export default function CancelOrderbutton({ id, closeModal } : { id: string , cl
 
   const cancelOrder = () => {
     if (input.trim() === "123") {
-      mutation.mutate(id);
+      mutation.mutate(order._id);
     } else {
       setIsWrong(true);
     }
@@ -50,9 +50,9 @@ export default function CancelOrderbutton({ id, closeModal } : { id: string , cl
           setInput("");
           setIsWrong(false);
         }}
-        className="px-4 py-2 bg-red-500 rounded-lg"
+        className="px-3 py-2 bg-red-500 rounded-lg"
       >
-        <Text className="text-white font-semibold">Cancel Order</Text>
+        <Text className="text-white font-semibold"> {order.status == "completed" ? "cancel" : "revert"} </Text>
       </TouchableOpacity>
 
       {/* Modal */}

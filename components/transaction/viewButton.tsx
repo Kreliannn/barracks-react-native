@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import CancelOrderbutton from "./cancelOrderButton";
 
 export default function ViewButton({ order }: { order: getOrdersInterface }) {
   const [visible, setVisible] = useState(false);
@@ -124,18 +123,7 @@ export default function ViewButton({ order }: { order: getOrdersInterface }) {
                 </View>
               </View>
 
-              <View className="flex-row gap-2 mt-3 mb-2">
-    
-                  <TouchableOpacity
-                    className={`bg-green-500 text-white py-2 px-4 rounded-md flex-1 ${!connectedDevice && "hidden"}`}
-                    onPress={() => reprentReceipt(order)}
-                  >
-                    <Text className="text-center font-semibold text-white">Reprint Order</Text>
-                  </TouchableOpacity>
-
-                  <CancelOrderbutton id={order._id} closeModal={setVisible} />
-
-              </View>
+          
 
                      
         

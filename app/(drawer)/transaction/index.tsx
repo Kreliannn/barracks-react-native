@@ -1,8 +1,10 @@
+import CancelOrderbutton from '@/components/transaction/cancelOrderButton';
 import ViewButton from '@/components/transaction/viewButton';
+import { useBluetooth } from '@/provider/bluetoothProvider';
 import useUserStore from '@/store/user.store';
-import { getOrdersInterface } from '@/types/orders.type';
+import { getOrdersInterface, ordersInterface } from '@/types/orders.type';
 import axiosInstance from '@/utils/axios';
-import { printXReading } from '@/utils/print';
+import { printReceipt, printXReading } from '@/utils/print';
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -25,9 +27,16 @@ export default function TransactionPage() {
 
   const {user} = useUserStore()
 
+  const {connectedDevice} = useBluetooth()
+  
+  
+  const reprentReceipt = (order : ordersInterface) => {
+    printReceipt(order, order.grandTotal)
+  }
+
   const { data } = useQuery({
     queryKey: ["receipt"],
-    queryFn: () => axiosInstance.get("/order/completed")
+    queryFn: () => axiosInstance.get("/order/orderHistory")
   });
 
   useEffect(() => {
@@ -70,60 +79,170 @@ export default function TransactionPage() {
 
   
 
-  return (
-    <View className="flex-1 bg-stone-100">
-      {/* Top fixed header */}
-        <View className="px-6 py-4 border-b border-stone-200 bg-white flex-row justify-between items-center">
-            <View className="w-4/5">
-              <Text className="text-xl font-semibold text-stone-900">Transaction History</Text>
-              <Text className="text-sm text-stone-600 mt-1">View detailed records of all transactions</Text>
-            </View>
-            <TouchableOpacity
-              onPress={handleXreading}
-              className="px-3 py-2 bg-emerald-600 rounded-lg"
-            >
-              <Text className="text-white font-semibold">X Reading</Text>
-            </TouchableOpacity>
+return (
+  <View className="flex-1 bg-gradient-to-br from-stone-50 to-stone-100">
+    {/* Enhanced Header with Gradient */}
+    <View className="px-8 py-5 bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-lg">
+      <View className="flex-row justify-between items-center">
+        <View className="flex-1">
+          <Text className="text-2xl font-bold text-green-900">Transaction History</Text>
+          <Text className="text-sm text-emerald-700 mt-1">
+            {orders.length} transactions for  {new Date().toLocaleDateString()}
+          </Text>
         </View>
-
-      <ScrollView className="flex-1 px-4 py-6 mt-2">
-        <View className="bg-white rounded-lg shadow-sm  overflow-hidden">
-          {/* Header */}
-          
-
-          {/* Table Header */}
-          <View className="flex-row justify-between items-center gap-2 px-6 py-3 bg-stone-50 border-b border-stone-200">
-            <Text className="text-xs font-medium text-stone-500 w-[15%]">Date</Text>
-            <Text className="text-xs font-medium text-stone-500 w-[15%]">Time</Text>
-            <Text className="text-xs font-medium text-stone-500 w-[10%]">Table</Text>
-            <Text className="text-xs font-medium text-stone-500 w-[10%]">Cashier</Text>
-            <Text className="text-xs font-medium text-stone-500 w-[10%]">Payment</Text>
-            <Text className="text-xs font-medium text-stone-500 w-[5%]">Type</Text>
-            <Text className="text-xs font-medium text-stone-500 w-[10%]">Total</Text>
-            <Text className="text-xs font-medium text-stone-500 w-[10%]">View</Text>
-          </View>
-
-          {/* Transactions */}
-          {orders.map((transaction) => (
-            <View
-              key={transaction._id}
-              className="flex-row justify-between items-center px-6 py-4 border-b border-stone-100"
-            >
-              <Text className="text-sm text-stone-900 w-[15%]">{transaction.date}</Text>
-              <Text className="text-sm text-stone-900 w-[15%]">{transaction.time || "10:00 AM"}</Text>
-              <Text className="text-sm text-emerald-700 font-medium w-[10%]">{transaction.table}</Text>
-              <Text className="text-sm text-stone-900 w-[15%]">{transaction.cashier}</Text>
-              <Text className="text-sm text-stone-900 w-[15%]">{transaction.paymentMethod}</Text>
-              <Text className="text-sm text-stone-900 w-[10%]">{transaction.orderType}</Text>
-              <Text className="text-sm font-semibold text-green-600 w-[15%]">
-                ₱{transaction.grandTotal.toFixed(2)}
-              </Text>
-              <ViewButton order={transaction} />
-             
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+        <TouchableOpacity
+          onPress={handleXreading}
+          className="px-6 py-3 bg-green-900 rounded-xl shadow-md active:scale-95"
+          style={{ elevation: 3 }}
+        >
+          <Text className="text-white font-bold text-base"> X Reading</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  );
+
+    <ScrollView className="flex-1 px-6 py-6">
+      <View className="bg-white rounded-2xl shadow-xl overflow-hidden" style={{ elevation: 4 }}>
+        {/* Modern Table Header */}
+        <View className="flex-row items-center px-6 py-4 bg-gradient-to-r from-stone-100 to-stone-50 border-b-2 border-emerald-500">
+          <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[12%]">
+            Date & Time
+          </Text>
+          <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[10%]">
+            Table
+          </Text>
+          <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[14%]">
+            Cashier
+          </Text>
+          <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[12%]">
+            Payment
+          </Text>
+          <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[7%]">
+            Type
+          </Text>
+          <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[13%] text-right">
+            Amount
+          </Text>
+          <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[10%] text-right">
+            View
+          </Text>
+          <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[10%] text-right">
+            Reprint
+          </Text>
+          <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[10%] text-right">
+            Cancel
+          </Text>
+          <View className="w-[10%]" />
+        </View>
+
+        {/* Enhanced Transaction Rows */}
+        {orders.map((transaction, index) => (
+          <TouchableOpacity
+            key={transaction._id}
+            activeOpacity={0.7}
+            className={`flex-row items-center px-6 py-5 border-b border-stone-100  ${
+             (transaction.status == "canceled" && "bg-stone-200 border-stone-700")
+            }`}
+          >
+            {/* Date & Time Column */}
+            <View className="w-[12%]">
+              <Text className="text-sm font-semibold text-stone-900">
+                {transaction.date}
+              </Text>
+              <Text className="text-xs text-stone-500 mt-0.5">
+                {transaction.time || "10:00 AM"}
+              </Text>
+            </View>
+
+            {/* Table Column with Badge */}
+            <View className="w-[10%]">
+              <View className={`px-3 py-1.5 rounded-lg self-start ${ transaction.status == "canceled" ?  "bg-stone-50 " : "bg-emerald-100 "}`}>
+                <Text className="text-sm font-bold text-emerald-700">
+                  {transaction.table}
+                </Text>
+              </View>
+            </View>
+
+            {/* Cashier Column */}
+            <View className="w-[14%]">
+              <Text className="text-sm text-stone-900 font-medium">
+                {transaction.cashier}
+              </Text>
+            </View>
+
+            {/* Payment Method with Icon */}
+            <View className="w-[11%]">
+              <View className="flex-row items-center">
+                <View className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
+                <Text className="text-sm text-stone-700">
+                  {transaction.paymentMethod}
+                </Text>
+              </View>
+            </View>
+
+            {/* Order Type Badge */}
+            <View className="w-[10%]">
+              <View className={`px-3 py-1.5 rounded-lg self-start ${
+                transaction.orderType === 'Dine-in' 
+                  ? 'bg-purple-100' 
+                  : 'bg-orange-100'
+              }`}>
+                <Text className={`text-xs font-semibold ${
+                  transaction.orderType === 'Dine-in'
+                    ? 'text-purple-700'
+                    : 'text-orange-700'
+                }`}>
+                  {transaction.orderType}
+                </Text>
+              </View>
+            </View>
+
+            {/* Amount with Enhanced Styling */}
+            <View className="w-[12%] items-end">
+              <View className={`px-4 py-2 rounded-lg ${ transaction.status == "canceled" ?  "bg-stone-50 " : "bg-green-50 "}`}>
+                <Text className={`text-base font-bold  ${ transaction.status == "canceled" ?  "text-gray-500 line-through" : "text-green-600"}`}>
+                  ₱{transaction.grandTotal.toFixed(2)}
+                </Text>
+              </View>
+            </View>
+
+            {/* View Button */}
+            <View className="w-[10%] items-end">
+              <ViewButton order={transaction} />
+            </View>
+
+            <View className="w-[10%] items-end">
+                <TouchableOpacity
+                  className={`bg-green-500 text-white py-2 px-4 rounded-md flex-1 ${!connectedDevice && "hidden"}`}
+                  onPress={() => reprentReceipt(transaction)}
+                                >
+                  <Text className="text-center font-semibold text-white"> print </Text>
+                </TouchableOpacity>
+            </View>
+
+            <View className="w-[10%] items-end">
+                <CancelOrderbutton order={transaction} />
+            </View>
+          </TouchableOpacity>
+        ))}
+
+        {/* Empty State */}
+        {orders.length === 0 && (
+          <View className="py-16 items-center">
+            <Text className="text-4xl mb-3">📋</Text>
+            <Text className="text-lg font-semibold text-stone-400">
+              No transactions yet
+            </Text>
+            <Text className="text-sm text-stone-400 mt-1">
+              Transactions will appear here once created
+            </Text>
+          </View>
+        )}
+      </View>
+
+      <View  className='h-10'/> 
+
+  
+    </ScrollView>
+  </View>
+);
 }

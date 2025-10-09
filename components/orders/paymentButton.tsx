@@ -3,7 +3,6 @@ import useActiveTableStore from "@/store/activeTable.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
-import { printReceipt } from "@/utils/print";
 import { Picker } from "@react-native-picker/picker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -56,7 +55,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
         } 
         removeTable(order.table)
         mutation.mutate({ id : order._id , paymentMethod})
-        printReceipt(order, payment)
+        //printReceipt(order, payment)
     }
 
    
