@@ -10,12 +10,12 @@ const logo = require("@/assets/barracks.png")
 
 
 interface salesInterface  {
-  cash:  { sales : number, qty : number},
-  debitCard:  { sales : number, qty : number},
-  gcash:  { sales : number, qty : number},
-  payMaya:  { sales : number, qty : number},
-  grabPayment:  { sales : number, qty : number},
-  chequePayment:  { sales : number, qty : number},
+  cash:  {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  debitCard:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  gcash:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  payMaya:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  grabPayment:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  chequePayment:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
   totalSales: number,
   totalVat : number,
   serviceFee : number
@@ -257,34 +257,47 @@ export const printXReading = async (sales: salesInterface, cashier: string) => {
     await BluetoothEscposPrinter.printText(`Printed By:   ${cashier}\n\r`, {});
     await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
 
-    // Payment breakdown
     const payments = [
-      { name: "Cash", sales: sales.cash.sales, qty: sales.cash.qty },
-      { name: "Debit Card", sales: sales.debitCard.sales, qty: sales.debitCard.qty },
-      { name: "GCash", sales: sales.gcash.sales, qty: sales.gcash.qty },
-      { name: "PayMaya", sales: sales.payMaya.sales, qty: sales.payMaya.qty },
-      { name: "GrabPay", sales: sales.grabPayment.sales, qty: sales.grabPayment.qty },
-      { name: "Cheque", sales: sales.chequePayment.sales, qty: sales.chequePayment.qty },
+      { name: "Cash", data: sales.cash },
+      { name: "Debit Card", data: sales.debitCard },
+      { name: "GCash", data: sales.gcash },
+      { name: "PayMaya", data: sales.payMaya },
+      { name: "GrabPay", data: sales.grabPayment },
+      { name: "Cheque", data: sales.chequePayment },
     ];
 
 
+   
     for (const p of payments) {
-      await BluetoothEscposPrinter.printText("================================\n\r", {});
+      await BluetoothEscposPrinter.printText("\n================================\n\r", {});
 
-      // Row 1: Name + headers
-      const label = p.name.padEnd(12); 
-      const headers = "Qty".padEnd(3) + "Sales".padStart(14);
+      // Header
+      const label = p.name.padEnd(12);
+      const headers = "Qty".padEnd(8) + "Amount".padStart(10);
       await BluetoothEscposPrinter.printText(label + headers + "\n\r", {});
 
-      // Row 2: Empty first col + values
-      const empty = "".padEnd(12);
-      const qty = String(p.qty).padEnd(3);
-      const sales = p.sales.toFixed(2).padStart(14);
-      await BluetoothEscposPrinter.printText(empty + qty + sales + "\n\r", {});
+      await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+
+      // Total Sales
+      const salesQty = String(p.data.sales.qty).padEnd(8);
+      const salesAmt = p.data.sales.amount.toFixed(2).padStart(10);
+      await BluetoothEscposPrinter.printText("Sales".padEnd(12) + salesQty + salesAmt + "\n\r", {});
+
+      // Total Refund
+      const refundQty = String(p.data.refund.qty).padEnd(8);
+      const refundAmt = p.data.refund.amount.toFixed(2).padStart(10);
+      await BluetoothEscposPrinter.printText("Refund".padEnd(12) + refundQty + refundAmt + "\n\r", {});
+      await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+
+      // Total Net
+      const totalQty = String(p.data.sales.qty + p.data.refund.qty).padEnd(8);
+      const totalAmt = p.data.total.toFixed(2).padStart(10);
+      await BluetoothEscposPrinter.printText("Net".padEnd(12) + totalQty + totalAmt + "\n\r", {});
+      await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
     }
 
-
-    await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+     await BluetoothEscposPrinter.printText("\n\n\r", {});
+   
 
     // Totals
     await BluetoothEscposPrinter.printText(

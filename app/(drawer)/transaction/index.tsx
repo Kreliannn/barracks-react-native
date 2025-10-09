@@ -11,12 +11,12 @@ import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 
 interface salesInterface  {
-  cash:  { sales : number, qty : number},
-  debitCard:  { sales : number, qty : number},
-  gcash:  { sales : number, qty : number},
-  payMaya:  { sales : number, qty : number},
-  grabPayment:  { sales : number, qty : number},
-  chequePayment:  { sales : number, qty : number},
+  cash:  {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  debitCard:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  gcash:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  payMaya:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  grabPayment:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
+  chequePayment:   {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
   totalSales: number,
   totalVat : number,
   serviceFee : number
@@ -47,12 +47,12 @@ export default function TransactionPage() {
     if(!user) return
 
     const sales : salesInterface = {
-      cash: { sales : 0, qty : 0},
-      debitCard: { sales : 0, qty : 0},
-      gcash: { sales : 0, qty : 0},
-      payMaya: { sales : 0, qty : 0},
-      grabPayment: { sales : 0, qty : 0},
-      chequePayment: { sales : 0, qty : 0},
+      cash:  {total : 0 ,sales : { amount : 0, qty : 0}, refund : { amount : 0, qty : 0}},
+      debitCard:  {total : 0 ,sales : { amount : 0, qty : 0}, refund : { amount : 0, qty : 0}},
+      gcash:  {total : 0 ,sales : { amount : 0, qty : 0}, refund : { amount : 0, qty : 0}},
+      payMaya:  {total : 0 ,sales : { amount : 0, qty : 0}, refund : { amount : 0, qty : 0}},
+      grabPayment:  {total : 0 ,sales : { amount : 0, qty : 0}, refund : { amount : 0, qty : 0}},
+      chequePayment:  {total : 0 ,sales : { amount : 0, qty : 0}, refund : { amount : 0, qty : 0}},
       totalSales: 0,
       totalVat : 0,
       serviceFee : 0
@@ -60,16 +60,90 @@ export default function TransactionPage() {
 
     orders.forEach((order) => {
       switch (order.paymentMethod) {
-        case "cash": sales.cash.sales += order.grandTotal; sales.cash.qty += 1;   break;
-        case "debitCard": sales.debitCard.sales += order.grandTotal; sales.debitCard.qty += 1; break;
-        case "gcash": sales.gcash.sales += order.grandTotal; sales.gcash.qty += 1; break;
-        case "payMaya": sales.payMaya.sales += order.grandTotal; sales.payMaya.qty += 1; break;
-        case "grabPayment": sales.grabPayment.sales += order.grandTotal; sales.grabPayment.qty += 1; break;
-        case "chequePayment": sales.chequePayment.sales += order.grandTotal; sales.chequePayment.qty += 1; break;
+        case "cash":
+            if(order.status == "completed"){
+              sales.cash.sales.amount += order.grandTotal;
+              sales.cash.sales.qty += 1;
+              sales.cash.total += order.grandTotal
+            } else {
+              sales.cash.refund.amount += order.grandTotal;
+              sales.cash.refund.qty += 1;
+              sales.cash.total -= order.grandTotal
+            }
+          break;
+
+        case "debitCard":
+            if(order.status == "completed"){
+              sales.debitCard.sales.amount += order.grandTotal;
+              sales.debitCard.sales.qty += 1;
+              sales.debitCard.total += order.grandTotal
+            } else {
+              sales.debitCard.refund.amount += order.grandTotal;
+              sales.debitCard.refund.qty += 1;
+              sales.debitCard.total -= order.grandTotal
+            }
+          break;
+
+        case "gcash":
+            if(order.status == "completed"){
+              sales.gcash.sales.amount += order.grandTotal;
+              sales.gcash.sales.qty += 1;
+              sales.gcash.total += order.grandTotal
+            } else {
+              sales.gcash.refund.amount += order.grandTotal;
+              sales.gcash.refund.qty += 1;
+              sales.gcash.total -= order.grandTotal
+            }
+          break;
+
+        case "payMaya":
+            if(order.status == "completed"){
+              sales.payMaya.sales.amount += order.grandTotal;
+              sales.payMaya.sales.qty += 1;
+              sales.payMaya.total += order.grandTotal
+            } else {
+              sales.payMaya.refund.amount += order.grandTotal;
+              sales.payMaya.refund.qty += 1;
+              sales.payMaya.total -= order.grandTotal
+            }
+          break;
+
+        case "grabPayment":
+            if(order.status == "completed"){
+              sales.grabPayment.sales.amount += order.grandTotal;
+              sales.grabPayment.sales.qty += 1;
+              sales.grabPayment.total += order.grandTotal
+            } else {
+              sales.grabPayment.refund.amount += order.grandTotal;
+              sales.grabPayment.refund.qty += 1;
+              sales.grabPayment.total -= order.grandTotal
+            }
+          break;
+
+        case "chequePayment":
+            if(order.status == "completed"){
+              sales.chequePayment.sales.amount += order.grandTotal;
+              sales.chequePayment.sales.qty += 1;
+              sales.chequePayment.total += order.grandTotal
+            } else {
+              sales.chequePayment.refund.amount += order.grandTotal;
+              sales.chequePayment.refund.qty += 1;
+              sales.chequePayment.total -= order.grandTotal
+            }
+          break;
       }
-      sales.totalSales += order.grandTotal;
-      sales.totalVat += order.vat
-      sales.serviceFee += order.serviceFee
+
+      if(order.status == "completed") {
+        sales.totalSales += order.grandTotal;
+        sales.totalVat += order.vat
+        sales.serviceFee += order.serviceFee
+      } else {
+        sales.totalSales -= order.grandTotal;
+        sales.totalVat -= order.vat
+        sales.serviceFee -= order.serviceFee
+      }
+
+      
     });
 
     printXReading(sales, user.fullname)
@@ -140,7 +214,7 @@ return (
             key={transaction._id}
             activeOpacity={0.7}
             className={`flex-row items-center px-6 py-5 border-b border-stone-100  ${
-             (transaction.status == "canceled" && "bg-stone-200 border-stone-700")
+             (transaction.status == "canceled" && "bg-stone-200 border-stone-400")
             }`}
           >
             {/* Date & Time Column */}
@@ -182,14 +256,14 @@ return (
             {/* Order Type Badge */}
             <View className="w-[10%]">
               <View className={`px-3 py-1.5 rounded-lg self-start ${
-                transaction.orderType === 'Dine-in' 
-                  ? 'bg-purple-100' 
-                  : 'bg-orange-100'
+                transaction.status === 'completed' 
+                  ? 'bg-orange-100' 
+                  : 'bg-stone-50'
               }`}>
                 <Text className={`text-xs font-semibold ${
-                  transaction.orderType === 'Dine-in'
-                    ? 'text-purple-700'
-                    : 'text-orange-700'
+                  transaction.status === 'completed'
+                    ? 'text-orange-700'
+                    : 'text-stone-700'
                 }`}>
                   {transaction.orderType}
                 </Text>
