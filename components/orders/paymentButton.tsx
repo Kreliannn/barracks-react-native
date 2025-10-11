@@ -40,7 +40,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
                 setOrders(response.data)
                 setPayment(0)
                 setVisible(false)
-                queryClient.invalidateQueries({ queryKey: ["receipt"] });
+                queryClient.refetchQueries({ queryKey: ["receipt"] });
             },
             onError: (err) => {
                 errorAlert("error")

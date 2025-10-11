@@ -40,7 +40,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
         setOpen(false);
         clearOrders();
         successAlert( "Order placed successfully!");
-        queryClient.invalidateQueries({ queryKey: ["order"] });
+        queryClient.refetchQueries({ queryKey: ["order"] });
     },
     onError: () => {
         errorAlert( "Something went wrong while placing the order.");

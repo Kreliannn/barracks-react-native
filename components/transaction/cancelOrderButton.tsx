@@ -23,7 +23,7 @@ export default function CancelOrderbutton({ order }: { order: getOrdersInterface
     onSuccess: () => {
       successAlert( (order.status == "completed") ? "Order canceled" : "Status Changed")
       setVisible(false);
-      queryClient.invalidateQueries({ queryKey: ["receipt"] });
+      queryClient.refetchQueries({ queryKey: ["receipt"] });
       setInput("");
       setIsWrong(false);
     },

@@ -114,7 +114,7 @@ export default function OrdersPage() {
             </View>
 
             { /* Orders List */}
-            <OrderList orders={order.orders} />
+            <OrderList orders={order.orders} orderId={order._id}/>
 
         
 

@@ -5,12 +5,12 @@ import { generateId } from "@/utils/customFunction";
 import { Picker } from "@react-native-picker/picker";
 import { useEffect, useState } from "react";
 import {
-    Image,
-    Modal,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function AddCartButton({ menu }: { menu: getMenuInterface }) {
