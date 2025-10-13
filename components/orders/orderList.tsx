@@ -21,7 +21,7 @@ export default function OrderList({ orders, orderId }: { orders: orderInterface[
         axiosInstance.put("/order/applyDiscount", data),
             onSuccess: (response) => {
                 successAlert("discount applied")
-                queryClient.invalidateQueries({ queryKey: ["order"] });
+                queryClient.refetchQueries({ queryKey: ["order"] });
                 setVisible(false)
             },
             onError: (err) => {
@@ -104,7 +104,7 @@ export default function OrderList({ orders, orderId }: { orders: orderInterface[
             >
                 {orders.map((item, itemIndex) => (
                 <View key={itemIndex} className="bg-stone-100 rounded-md shadow mb-3 flex-row">
-                    <View className="p-3 w-full w-[85%]">
+                    <View className="p-3 w-full w-[82%]">
                       <View className="flex-row justify-between items-start mb-1 ">
                           <Text className="font-medium text-gray-800 flex-1">{item.name}</Text>
                           <Text className="text-gray-600 ml-2">x{item.qty}</Text>

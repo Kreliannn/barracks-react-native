@@ -3,9 +3,11 @@ import ViewButton from '@/components/transaction/viewButton';
 import { useBluetooth } from '@/provider/bluetoothProvider';
 import useUserStore from '@/store/user.store';
 import { getOrdersInterface, ordersInterface } from '@/types/orders.type';
+import { errorAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
 import { printReceipt, printXReading } from '@/utils/print';
-import { useQuery } from "@tanstack/react-query";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
@@ -25,9 +27,26 @@ interface salesInterface  {
 export default function TransactionPage() {
   const [orders, setOrders] = useState<getOrdersInterface[]>([]);
 
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
+
   const {user} = useUserStore()
 
   const {connectedDevice} = useBluetooth()
+
+   const mutation = useMutation({
+    mutationFn: (date: string) => axiosInstance.get("/order/orderHistory/" + date),
+    onSuccess: (response) => {
+      setOrders(response.data)
+    },
+    onError: () => {
+      errorAlert("Error");
+    },
+  })
+
+  const changeHistoryByDate = (date : string) => {
+    mutation.mutate(date)
+  }
   
   
   const reprentReceipt = (order : ordersInterface) => {
@@ -66,9 +85,9 @@ export default function TransactionPage() {
               sales.cash.sales.qty += 1;
               sales.cash.total += order.grandTotal
             } else {
-              sales.cash.refund.amount += order.grandTotal;
-              sales.cash.refund.qty += 1;
-              sales.cash.total -= order.grandTotal
+              //sales.cash.refund.amount += order.grandTotal;
+              //sales.cash.refund.qty += 1;
+              //sales.cash.total -= order.grandTotal
             }
           break;
 
@@ -78,9 +97,9 @@ export default function TransactionPage() {
               sales.debitCard.sales.qty += 1;
               sales.debitCard.total += order.grandTotal
             } else {
-              sales.debitCard.refund.amount += order.grandTotal;
-              sales.debitCard.refund.qty += 1;
-              sales.debitCard.total -= order.grandTotal
+              //sales.debitCard.refund.amount += order.grandTotal;
+              //sales.debitCard.refund.qty += 1;
+              //sales.debitCard.total -= order.grandTotal
             }
           break;
 
@@ -90,9 +109,9 @@ export default function TransactionPage() {
               sales.gcash.sales.qty += 1;
               sales.gcash.total += order.grandTotal
             } else {
-              sales.gcash.refund.amount += order.grandTotal;
-              sales.gcash.refund.qty += 1;
-              sales.gcash.total -= order.grandTotal
+             // sales.gcash.refund.amount += order.grandTotal;
+              //sales.gcash.refund.qty += 1;
+              //sales.gcash.total -= order.grandTotal
             }
           break;
 
@@ -102,9 +121,9 @@ export default function TransactionPage() {
               sales.payMaya.sales.qty += 1;
               sales.payMaya.total += order.grandTotal
             } else {
-              sales.payMaya.refund.amount += order.grandTotal;
-              sales.payMaya.refund.qty += 1;
-              sales.payMaya.total -= order.grandTotal
+              //sales.payMaya.refund.amount += order.grandTotal;
+              //sales.payMaya.refund.qty += 1;
+              //sales.payMaya.total -= order.grandTotal
             }
           break;
 
@@ -114,9 +133,9 @@ export default function TransactionPage() {
               sales.grabPayment.sales.qty += 1;
               sales.grabPayment.total += order.grandTotal
             } else {
-              sales.grabPayment.refund.amount += order.grandTotal;
-              sales.grabPayment.refund.qty += 1;
-              sales.grabPayment.total -= order.grandTotal
+              //sales.grabPayment.refund.amount += order.grandTotal;
+              //sales.grabPayment.refund.qty += 1;
+              //sales.grabPayment.total -= order.grandTotal
             }
           break;
 
@@ -126,9 +145,9 @@ export default function TransactionPage() {
               sales.chequePayment.sales.qty += 1;
               sales.chequePayment.total += order.grandTotal
             } else {
-              sales.chequePayment.refund.amount += order.grandTotal;
-              sales.chequePayment.refund.qty += 1;
-              sales.chequePayment.total -= order.grandTotal
+              //sales.chequePayment.refund.amount += order.grandTotal;
+              //sales.chequePayment.refund.qty += 1;
+              //sales.chequePayment.total -= order.grandTotal
             }
           break;
       }
@@ -138,9 +157,9 @@ export default function TransactionPage() {
         sales.totalVat += order.vat
         sales.serviceFee += order.serviceFee
       } else {
-        sales.totalSales -= order.grandTotal;
-        sales.totalVat -= order.vat
-        sales.serviceFee -= order.serviceFee
+        //sales.totalSales -= order.grandTotal;
+        //sales.totalVat -= order.vat
+        //sales.serviceFee -= order.serviceFee
       }
 
       
@@ -155,23 +174,52 @@ export default function TransactionPage() {
 
 return (
   <View className="flex-1 bg-gradient-to-br from-stone-50 to-stone-100">
+
+
     {/* Enhanced Header with Gradient */}
     <View className="px-8 py-5 bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-lg">
       <View className="flex-row justify-between items-center">
         <View className="flex-1">
           <Text className="text-2xl font-bold text-green-900">Transaction History</Text>
           <Text className="text-sm text-emerald-700 mt-1">
-            {orders.length} transactions for  {new Date().toLocaleDateString()}
+            {orders.length} transactions for {date.toLocaleDateString()}
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={handleXreading}
-          className="px-6 py-3 bg-green-900 rounded-xl shadow-md active:scale-95"
-          style={{ elevation: 3 }}
-        >
-          <Text className="text-white font-bold text-base"> X Reading</Text>
-        </TouchableOpacity>
+
+        <View className="flex-row items-center space-x-3">
+          <TouchableOpacity
+            onPress={() => setShowPicker(true)}
+            className="px-4 py-3 bg-emerald-800 rounded-xl shadow-md active:scale-95 mr-2"
+            style={{ elevation: 3 }}
+          >
+            <Text className="text-white font-bold text-base">Pick Date</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleXreading}
+            className={`px-6 py-3 bg-green-900 rounded-xl shadow-md active:scale-95 ${!connectedDevice && "hidden"}`}
+            style={{ elevation: 3 }}
+          >
+            <Text className="text-white font-bold text-base">X Reading</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
+      {showPicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowPicker(false);
+            if (selectedDate){
+              setDate(selectedDate);
+              const formattedDate = selectedDate.toISOString().split('T')[0];
+              changeHistoryByDate(formattedDate)
+            } 
+          }}
+        />
+      )}
     </View>
 
     <ScrollView className="flex-1 px-6 py-6">
