@@ -6,6 +6,7 @@ import { Image } from "react-native";
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
 import { orderInterface, ordersInterface } from "../types/orders.type";
 
+
 const logo = require("@/assets/barracks.png")
 
 
@@ -86,7 +87,7 @@ export const printBill = async (order: ordersInterface) => {
 
 export const printReceipt = async (order: ordersInterface, cash : number) => {
     
-  const asset = Image.resolveAssetSource(logo);
+    const asset = Image.resolveAssetSource(logo);
 
     
     const response = await fetch(asset.uri);
@@ -156,7 +157,7 @@ export const printReceipt = async (order: ordersInterface, cash : number) => {
 
 
 
-export const printForKitchen = async (connectedDevice : string ,orders : orderInterface[], table : string) => {
+export const printForKitchen = async (orders : orderInterface[], table : string, orderNumber : number) => {
     const now = new Date();
     const formatted = now.toLocaleString("en-US", {
       hour: "numeric",
@@ -169,12 +170,23 @@ export const printForKitchen = async (connectedDevice : string ,orders : orderIn
     });
 
     await BluetoothEscposPrinter.printText(
-      ` ${table.toUpperCase()}\n\r`,
+      `${table.toUpperCase()}\n\r`,
       {
         encoding: "GBK",
         codepage: 0,
         widthtimes: 2, 
         heigthtimes: 2,
+        fonttype: 1, 
+      }
+    );
+
+     await BluetoothEscposPrinter.printText(
+      `order num: ${orderNumber}\n\r`,
+      {
+        encoding: "GBK",
+        codepage: 0,
+        widthtimes: 1, 
+        heigthtimes: 1,
         fonttype: 1, 
       }
     );
@@ -190,6 +202,48 @@ export const printForKitchen = async (connectedDevice : string ,orders : orderIn
 
     await BluetoothEscposPrinter.printText("\n\r------------------------\n\r\n\r", {});
 }
+
+
+
+
+export const printOrderNumber = async (orderNumber: number) => {
+  const asset = Image.resolveAssetSource(logo);
+  const response = await fetch(asset.uri);
+  const blob = await response.blob();
+
+  const reader = new FileReader();
+  reader.onloadend = async () => {
+    {/* @ts-ignore */}
+    const base64Logo = reader.result.split(",")[1];
+
+    // Print logo
+    await BluetoothEscposPrinter.printPic(base64Logo, {
+      width: 600,
+      left: 0,
+    });
+
+    await BluetoothEscposPrinter.printText(`Order Number:\n`, {});
+    // Space
+    await BluetoothEscposPrinter.printText("================================\n", {});
+
+    await BluetoothEscposPrinter.printText(
+      `          ${orderNumber}\n\r`,
+      {
+        encoding: "GBK",
+        codepage: 0,
+        widthtimes: 2, 
+        heigthtimes: 2,
+        fonttype: 1, 
+      }
+    );
+
+
+    await BluetoothEscposPrinter.printText("\n================================\n\n\n", {});
+  };
+
+  reader.readAsDataURL(blob);
+};
+
 
 export const printRefill = async (connectedDevice : string ,ingridients : menuIngredientsInterface[], ingridientstData : getIngredientsInterface[] , table : string) => {
     const now = new Date();

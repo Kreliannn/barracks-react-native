@@ -32,7 +32,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
     const {removeTable} = useActiveTableStore()
         
     const mutation = useMutation({
-        mutationFn: (data: { id : string , paymentMethod : string}) =>
+        mutationFn: (data: { id : string , paymentMethod : string, orderNumber : number}) =>
         axiosInstance.put("/order", data),
             onSuccess: (response) => {
                 successAlert("success")
@@ -54,7 +54,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
             return errorAlert("too low")
         } 
         removeTable(order.table)
-        mutation.mutate({ id : order._id , paymentMethod})
+        mutation.mutate({ id : order._id , paymentMethod, orderNumber : order.orderNumber})
         printReceipt(order, payment)
     }
 

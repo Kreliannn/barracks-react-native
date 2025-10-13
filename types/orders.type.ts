@@ -1,4 +1,4 @@
-import { menuInterface , menuIngredientsInterface} from "./menu.type";
+import { menuIngredientsInterface } from "./menu.type";
 
 export interface orderInterface  {
     item_id : string,
@@ -30,7 +30,8 @@ export interface ordersInterface {
     time : string;
     status : string;
     serviceFee : number;
-    paymentMethod : string
+    paymentMethod : string;
+    orderNumber : number
   }
 
 
@@ -51,6 +52,7 @@ export interface getOrdersInterface {
   status : string;
   serviceFee : number;
   paymentMethod : string,
+  orderNumber : number
 }
 
 

@@ -3,12 +3,14 @@ import useActiveTableStore from "@/store/activeTable.store";
 import useOrderStore from "@/store/cart.store";
 import useTableStore from "@/store/table.store";
 import useUserStore from "@/store/user.store";
+import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
-import { printForKitchen } from "@/utils/print";
+import { printForKitchen, printOrderNumber } from "@/utils/print";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
+
 
 
 
@@ -34,13 +36,40 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
     hour12: true,
   });
 
+
+  const printOrderNumberHandler = (num : number) => {
+    Alert.alert(
+      "Print Order Number",
+      "Are you sure you want to print?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            await printOrderNumber(num); 
+          },
+        },
+      ]
+    ); 
+  }
+
   const mutation = useMutation({
     mutationFn: (data: any) => axiosInstance.post("/order", data),
-    onSuccess: () => {
+    onSuccess: (response) => {
         setOpen(false);
         clearOrders();
         successAlert( "Order placed successfully!");
         queryClient.refetchQueries({ queryKey: ["order"] });
+
+        const order : getOrdersInterface = response.data
+
+        printForKitchen(order.orders, order.table, order.orderNumber)
+
+        printOrderNumberHandler(order.orderNumber)
+
     },
     onError: () => {
         errorAlert( "Something went wrong while placing the order.");
@@ -69,12 +98,12 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
       time,
       status: "active",
       paymentMethod: "pending",
+      orderNumber : 0
     };
 
     addTable(table);
     setTable("");
     mutation.mutate(orderData);
-    printForKitchen(connectedDevice , orders, table)
   
   };
 

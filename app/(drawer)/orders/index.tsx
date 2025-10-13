@@ -61,6 +61,16 @@ export default function OrdersPage() {
 
             { /* Order Info */}
             <View className="p-4 space-y-3">
+
+               <View className="flex-row justify-between items-center mb-1">
+                  <Text className="text-sm font-medium text-gray-600">Order Number:</Text>
+                  <View className="bg-green-500 px-2 py-1 rounded">
+                    <Text className="text-sm font-semibold text-white">
+                      {order.orderNumber}
+                    </Text>
+                  </View>
+                </View>
+
                 <View className="flex-row justify-between items-center">
                   <Text className="text-sm font-medium text-gray-600">Order Type:</Text>
                   <View className="bg-gray-100 px-2 py-1 rounded">
