@@ -4,7 +4,7 @@
     "slug": "barracks-mobile-app",
     "version": "1.0.0",
     "orientation": "landscape",
-    "icon": "./assets/images/icon.png", 
+    "icon": "./assets/images/icon.png",
     "scheme": "barracksmobileapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -38,6 +38,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8bbd05ec-26a2-4881-89e7-b267797136bb"
+      }
     }
   }
 }

@@ -3,11 +3,11 @@ import useActiveTableStore from "@/store/activeTable.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
-import { printReceipt } from "@/utils/print";
 import { Picker } from "@react-native-picker/picker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   Modal,
   Text,
@@ -18,9 +18,8 @@ import {
 
 
 
-
 export default function PaymentButton({ order, setOrders }:  { order: getOrdersInterface, setOrders :  React.Dispatch<React.SetStateAction<getOrdersInterface[]>> }) {
-     const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(false);
     const [payment, setPayment] = useState(0);
 
     const {connectedDevice} = useBluetooth()
@@ -39,8 +38,13 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
                 setPaymentMethod("cash")
                 setOrders(response.data)
                 setPayment(0)
-                setVisible(false)
+               
                 queryClient.refetchQueries({ queryKey: ["receipt"] });
+             
+                setVisible(false)
+
+                Alert.alert('Customer change', `₱${payment -  order.grandTotal}`);
+                
             },
             onError: (err) => {
                 errorAlert("error")
@@ -55,7 +59,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
         } 
         removeTable(order.table)
         mutation.mutate({ id : order._id , paymentMethod, orderNumber : order.orderNumber})
-        printReceipt(order, payment)
+       // printReceipt(order, payment)
     }
 
    
@@ -67,6 +71,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
       <TouchableOpacity className={`bg-white py-2 px-4 rounded-md flex-1 ${!connectedDevice && "hidden"}`}  onPress={() => setVisible(true)}>
              <Text className="text-center font-semibold text-green-900">Payment</Text>
        </TouchableOpacity>
+
   
       {/* Modal */}
       <Modal

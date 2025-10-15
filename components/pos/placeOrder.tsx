@@ -27,7 +27,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
 
 
   const [open, setOpen] = useState(false);
-  const [orderType, setOrderType] = useState("dine in");
+  const [orderType, setOrderType] = useState(table != "Take Away"  ? "dine in" : "take out");
 
   const now = new Date();
   const time = now.toLocaleTimeString("en-US", {
@@ -81,6 +81,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
     if(!connectedDevice)return Alert.alert("No printer");
 
     const formattedDate = new Date().toISOString().split("T")[0];
+
 
     const orderData = {
       orders,

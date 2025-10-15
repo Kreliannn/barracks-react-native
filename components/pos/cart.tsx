@@ -10,8 +10,14 @@ export function CartComponent({ table }: { table: string }) {
   const subTotal = getTotalWithVat(cartItems);
   const totalDiscount = getTotaldiscount(cartItems);
   const vat = getTotalVat(cartItems);
-  const serviceFee = subTotal * 0.1;
+  let serviceFee = subTotal * 0.1;
+
+  if(table == "Take Away") serviceFee = 0
+
+
   const discountedTotal = (totalWithVat - totalDiscount) + serviceFee;
+
+ 
 
   const orderInfo = {
     totalWithVat,
