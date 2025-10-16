@@ -104,7 +104,7 @@ export default function OrderList({ orders, orderId }: { orders: orderInterface[
             >
                 {orders.map((item, itemIndex) => (
                 <View key={itemIndex} className="bg-stone-100 rounded-md shadow mb-3 flex-row">
-                    <View className="p-3 w-full w-[82%]">
+                    <View className="p-3 w-[82%]">
                       <View className="flex-row justify-between items-start mb-1 ">
                           <Text className="font-medium text-gray-800 flex-1">{item.name}</Text>
                           <Text className="text-gray-600 ml-2">x{item.qty}</Text>

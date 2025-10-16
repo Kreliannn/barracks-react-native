@@ -93,6 +93,7 @@ export default function SplitOrders({
       time: order.date,
       status: "active",
       paymentMethod: "pending",
+      orderNumber : 0
     };
 
     mutation.mutate({
