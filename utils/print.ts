@@ -1,12 +1,12 @@
 import { getIngredientsInterface } from "@/types/ingredient.type";
 import { menuIngredientsInterface } from "@/types/menu.type";
-import { Image } from "react-native";
-import RNFS from "react-native-fs";
 //@ts-ignore
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
 import { orderInterface, ordersInterface } from "../types/orders.type";
 
 const logo = require("@/assets/barracks.png");
+
+import { LOGO_BASE64 } from "./constant";
 
 interface salesInterface  {
   cash:  {total : number ,sales : { amount : number, qty : number}, refund : { amount : number, qty : number}},
@@ -20,42 +20,17 @@ interface salesInterface  {
   serviceFee : number
 }
 
-// Helper function to print logo using react-native-fs
+
+
+
 const printLogo = async () => {
   try {
-    const asset = Image.resolveAssetSource(logo);
-    let base64Logo;
-
-    // Handle different asset URI formats between dev and production
-    if (asset.uri.startsWith('file://')) {
-      // Development build or file system path
-      base64Logo = await RNFS.readFile(asset.uri, 'base64');
-    } else if (asset.uri.startsWith('http://') || asset.uri.startsWith('https://')) {
-      // Development server
-      const downloadResult = await RNFS.downloadFile({
-        fromUrl: asset.uri,
-        toFile: `${RNFS.CachesDirectoryPath}/temp_logo.png`,
-      }).promise;
-      
-      if (downloadResult.statusCode === 200) {
-        base64Logo = await RNFS.readFile(`${RNFS.CachesDirectoryPath}/temp_logo.png`, 'base64');
-      }
-    } else {
-      // Production APK - asset is bundled
-      // Remove 'asset:/' prefix if present
-      const assetPath = asset.uri.replace('asset:/', '').replace('asset://', '');
-      base64Logo = await RNFS.readFileAssets(assetPath, 'base64');
-    }
-
-    if (base64Logo) {
-      await BluetoothEscposPrinter.printPic(base64Logo, {
-        width: 384, // Standard thermal printer width
-        left: 0,
-      });
-    }
+    await BluetoothEscposPrinter.printPic(LOGO_BASE64, {
+      width: 384,
+      left: 0,
+    });
   } catch (e) {
     console.error("Failed to print logo:", e);
-    // Continue without logo if it fails
   }
 };
 
@@ -63,7 +38,7 @@ export const printBill = async (order: ordersInterface) => {
   try {
     await printLogo();
 
-    await BluetoothEscposPrinter.printText("\n\r", {});
+    await BluetoothEscposPrinter.printText("\r", {});
     await BluetoothEscposPrinter.printText("================================\n", {});
     await BluetoothEscposPrinter.printText(`Resto: The Barracks\n`, {});
     await BluetoothEscposPrinter.printText(`Branch: ${order.branch}\n`, {});
@@ -97,7 +72,7 @@ export const printReceipt = async (order: ordersInterface, cash: number) => {
   try {
     await printLogo();
 
-    await BluetoothEscposPrinter.printText("\n\r", {});
+    await BluetoothEscposPrinter.printText("\r", {});
     await BluetoothEscposPrinter.printText("================================\n", {});
     await BluetoothEscposPrinter.printText(`Resto: The Barracks\n`, {});
     await BluetoothEscposPrinter.printText(`Branch: ${order.branch}\n`, {});
