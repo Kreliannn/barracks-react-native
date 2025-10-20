@@ -1,4 +1,6 @@
-import { orderInterface } from "../types/orders.type";
+import { getIngredientsInterface } from "@/types/ingredient.type";
+import { getRefillInterface } from "@/types/refill.type";
+import { getOrdersInterface, orderInterface } from "../types/orders.type";
 
 
 export const getTotalWithVat = (items : orderInterface[] ) => {
@@ -45,3 +47,109 @@ export function generateId() {
       })
     ).toLowerCase();
   }
+
+
+
+export function isTime1To3am(time: string) {
+  const [hourStr, minutePart] = time.split(':');
+  const hour = parseInt(hourStr);
+  const isPM = minutePart.toLowerCase().includes('pm');
+
+  let hour24 = hour % 12 + (isPM ? 12 : 0);
+
+  return hour24 >= 1 && hour24 < 3;
+}
+
+
+export function getDate(time: string) {
+  if (!isTime1To3am(time)) {
+    return new Date().toISOString().split("T")[0];
+  } else {
+    const date = new Date();
+    date.setDate(date.getDate() - 1);
+    return date.toISOString().split("T")[0];
+  }
+}
+
+export function plus1Day(date: string) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split("T")[0];
+}
+
+
+export function formatMenuXreading(orders: getOrdersInterface[]) {
+  interface menuXreadingInterface {
+    menu: string;
+    sold: number;
+  }
+
+  const formatedData: menuXreadingInterface[] = [];
+
+  orders.forEach((item) => {
+    item.orders.forEach((order) => {
+      const existing = formatedData.find(f => f.menu === order.name);
+
+      if (existing) {
+        existing.sold += order.qty;
+      } else {
+        formatedData.push({ menu: order.name, sold: order.qty });
+      }
+    });
+  });
+
+
+  return formatedData
+}
+
+
+export function getIngredientData(id: string, ingredients: getIngredientsInterface[]) {
+  return ingredients.find(ing => ing._id === id);
+}
+
+
+
+export function formatIngridientXreading(ingredients: getIngredientsInterface[], orders: getOrdersInterface[], refills : getRefillInterface[]) {
+  interface ingredientXreadingInterface {
+    name: string;
+    kitchen: number;
+    refill: number;
+    total: number
+  }
+
+  const formatedData: ingredientXreadingInterface[] = [];
+
+  ingredients.forEach((ing) => {
+      formatedData.push({ name : ing.name, kitchen : 0, refill : 0, total : 0})
+  })
+
+
+  orders.forEach((item) => {
+    item.orders.forEach((order) => {
+     const orderQty = order.qty
+     order.ingredients.forEach((ing) => {
+          const ingData = getIngredientData(ing.id, ingredients)
+          const existing = formatedData.find(f => f.name === ingData?.name);
+          if(existing){
+              const kitchenUsed = ing.qty * orderQty
+              existing.kitchen += kitchenUsed
+              existing.total += kitchenUsed
+          }   
+     })
+    });
+  });
+
+
+  refills.forEach((Refill) => {
+     const existing = formatedData.find(f => f.name === Refill.ingredient);
+      if(existing){
+        const refillUsed = Refill.qty
+        existing.refill += refillUsed
+        existing.total += refillUsed
+      }   
+  })
+
+
+  return formatedData
+}
+

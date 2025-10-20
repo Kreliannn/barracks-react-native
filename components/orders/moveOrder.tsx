@@ -3,6 +3,7 @@ import useTableStore from "@/store/table.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
@@ -67,7 +68,7 @@ export default function MoveOrders({ order, setOrders }: { order: getOrdersInter
         onPress={() => setVisible(true)}
         className="px-4 py-2 bg-emerald-600 rounded-lg"
       >
-        <Text className="text-white font-semibold">Move Order</Text>
+         <MaterialCommunityIcons name="arrow-all" size={20} color="white" />
       </TouchableOpacity>
 
       {/* Modal */}

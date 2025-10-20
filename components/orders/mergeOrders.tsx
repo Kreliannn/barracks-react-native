@@ -2,6 +2,7 @@ import useActiveTableStore from "@/store/activeTable.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import {
@@ -12,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 
 
 export default function MergeOrders({
@@ -73,7 +75,7 @@ export default function MergeOrders({
         onPress={() => setVisible(true)}
         className="px-4 py-2 bg-emerald-600 rounded-lg"
       >
-        <Text className="text-white font-semibold">Merge</Text>
+        <MaterialCommunityIcons name="merge" size={20} color="white" />
       </TouchableOpacity>
 
       {/* Modal */}

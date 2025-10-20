@@ -10,6 +10,7 @@ import {
   getTotalVat,
   getTotalWithVat,
 } from "@/utils/customFunction";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
@@ -111,7 +112,8 @@ export default function SplitOrders({
         onPress={() => setVisible(true)}
         className="px-3 py-2 bg-emerald-600 rounded-lg"
       >
-        <Text className="text-white font-semibold">Split</Text>
+       <MaterialCommunityIcons name="call-split" size={20} color="white" />
+
       </TouchableOpacity>
 
       {/* Modal */}

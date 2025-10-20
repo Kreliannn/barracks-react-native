@@ -4,6 +4,7 @@ import { menuIngredientsInterface } from "@/types/menu.type";
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
 import { orderInterface, ordersInterface } from "../types/orders.type";
 
+
 const logo = require("@/assets/barracks.png");
 
 import { LOGO_BASE64 } from "./constant";
@@ -20,7 +21,18 @@ interface salesInterface  {
   serviceFee : number
 }
 
+  interface menuXreadingInterface {
+    menu: string;
+    sold: number;
+  }
 
+
+  interface ingredientXreadingInterface {
+    name: string;
+    kitchen: number;
+    refill: number;
+    total: number
+  }
 
 
 const printLogo = async () => {
@@ -38,7 +50,7 @@ export const printBill = async (order: ordersInterface) => {
   try {
     await printLogo();
 
-    await BluetoothEscposPrinter.printText("\r", {});
+    
     await BluetoothEscposPrinter.printText("================================\n", {});
     await BluetoothEscposPrinter.printText(`Resto: The Barracks\n`, {});
     await BluetoothEscposPrinter.printText(`Branch: ${order.branch}\n`, {});
@@ -72,7 +84,6 @@ export const printReceipt = async (order: ordersInterface, cash: number) => {
   try {
     await printLogo();
 
-    await BluetoothEscposPrinter.printText("\r", {});
     await BluetoothEscposPrinter.printText("================================\n", {});
     await BluetoothEscposPrinter.printText(`Resto: The Barracks\n`, {});
     await BluetoothEscposPrinter.printText(`Branch: ${order.branch}\n`, {});
@@ -298,3 +309,48 @@ export default async function PrintQr({ id, branch, manager, date }: any) {
   await BluetoothEscposPrinter.printQRCode(id, 350, 1);
   await BluetoothEscposPrinter.printText("================================\n\r\n\r", {});
 }
+
+
+
+export const printItemXreading = async (
+  menu: menuXreadingInterface[],
+  ing: ingredientXreadingInterface[]
+) => {
+  try {
+    await printLogo();
+
+    await BluetoothEscposPrinter.printText("================================\n\r", {});
+    await BluetoothEscposPrinter.printText("       MENU X-READING\n\r", { encoding: "GBK", codepage: 0 });
+    await BluetoothEscposPrinter.printText("================================\n\r", {});
+
+    // Menu list
+    for (const item of menu) {
+      const line = `${item.menu.slice(0, 14).padEnd(25)}${item.sold
+        .toString()
+        .padStart(4)}x\n\r`;
+      await BluetoothEscposPrinter.printText(line, {});
+    }
+
+    await BluetoothEscposPrinter.printText("================================\n\r", {});
+    await BluetoothEscposPrinter.printText("   INGREDIENT X-READING\n\r", {});
+    await BluetoothEscposPrinter.printText("================================\n\r", {});
+
+    // Header (full words but adjusted spacing)
+    await BluetoothEscposPrinter.printText("Name        Kitchen Refill Total\n\r", {});
+    await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+
+    // Ingredient rows (fit narrow paper)
+    for (const item of ing) {
+      const line =
+        `${item.name.slice(0, 10).padEnd(11)}` + // shorten long names
+        `${item.kitchen.toString().padStart(7)}` +
+        `${item.refill.toString().padStart(7)}` +
+        `${item.total.toString().padStart(6)}\n\r`;
+      await BluetoothEscposPrinter.printText(line, {});
+    }
+
+    await BluetoothEscposPrinter.printText("================================\n\r\n\r", {});
+  } catch (e) {
+    console.error("🧾 Print failed:", e);
+  }
+};

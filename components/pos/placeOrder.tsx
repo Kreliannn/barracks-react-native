@@ -96,7 +96,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
       cashier: user.fullname,
       branch: user.branch,
       date: formattedDate.toString(),
-      time,
+      time : time,
       status: "active",
       paymentMethod: "pending",
       orderNumber : 0

@@ -1,8 +1,11 @@
 import CancelOrderbutton from '@/components/transaction/cancelOrderButton';
+import ItemXreading from '@/components/transaction/itemsXreading';
 import ViewButton from '@/components/transaction/viewButton';
 import { useBluetooth } from '@/provider/bluetoothProvider';
 import useUserStore from '@/store/user.store';
+import { getIngredientsInterface } from '@/types/ingredient.type';
 import { getOrdersInterface, ordersInterface } from '@/types/orders.type';
+import { getRefillInterface } from '@/types/refill.type';
 import { errorAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
 import { printReceipt, printXReading } from '@/utils/print';
@@ -33,6 +36,41 @@ export default function TransactionPage() {
   const {user} = useUserStore()
 
   const {connectedDevice} = useBluetooth()
+
+
+  const [ingredients, setIngredients] = useState<getIngredientsInterface[]>([])
+
+
+  const { data : ingredientData  } = useQuery({
+        queryKey: ["ingredients"],
+        queryFn: () => axiosInstance.get("/ingredients"),
+  })
+
+
+  useEffect(() => {
+        if(ingredientData?.data){
+            setIngredients(ingredientData?.data)
+        } 
+  }, [ingredientData])
+
+
+
+  const [refill, setRefill] = useState<getRefillInterface[]>([])
+
+   const { data : refillData  } = useQuery({
+        queryKey: ["ingredients_refill"],
+        queryFn: () => axiosInstance.get("/ingredients/refill/" +  date.toISOString().split('T')[0]),
+  })
+
+
+  useEffect(() => {
+        if(refillData?.data){
+            setRefill(refillData?.data)
+            console.log(refillData?.data)
+        } 
+  }, [refillData])
+
+  
 
    const mutation = useMutation({
     mutationFn: (date: string) => axiosInstance.get("/order/orderHistory/" + date),
@@ -197,11 +235,13 @@ return (
 
           <TouchableOpacity
             onPress={handleXreading}
-            className={`px-6 py-3 bg-green-900 rounded-xl shadow-md active:scale-95 ${!connectedDevice && "hidden"}`}
+            className={`px-6 py-3 bg-green-900 rounded-xl shadow-md active:scale-95 ${!connectedDevice && "hidden"} mr-2`}
             style={{ elevation: 3 }}
           >
             <Text className="text-white font-bold text-base">X Reading</Text>
           </TouchableOpacity>
+
+          <ItemXreading ingredients={ingredients} orders={orders}  refills={refill}/>
         </View>
       </View>
 

@@ -3,14 +3,16 @@ import MoveOrders from '@/components/orders/moveOrder';
 import OrderList from '@/components/orders/orderList';
 import PaymentButton from '@/components/orders/paymentButton';
 import RefillButton from '@/components/orders/refillButton';
+import ReprintOrder from '@/components/orders/reprintOrder';
 import SplitOrders from '@/components/orders/splitOrders';
+import TableTimer from '@/components/orders/tableTimer';
 import { useBluetooth } from '@/provider/bluetoothProvider';
 import { getOrdersInterface } from '@/types/orders.type';
 import axiosInstance from '@/utils/axios';
-import { printBill } from '@/utils/print';
+import { checkIfHasUnli } from '@/utils/customFunction';
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<getOrdersInterface[]>([]);
@@ -48,7 +50,16 @@ export default function OrdersPage() {
         >
           {/* Header */}
           <View className="bg-green-900 p-4 flex-row items-center justify-between">
-            <Text className="text-xl font-bold text-white">{order.table}</Text>
+
+            <View className="flex-row justify-between items-center mb-1 gap-2">
+              <Text className="text-xl font-bold text-white">{order.table}</Text>
+
+              {!checkIfHasUnli(order.orders) && (
+                <TableTimer time={order.time} />
+              )}
+            </View>
+
+
 
             <View className='flex-row gap-1'>
               <RefillButton table={order.table}  orders={order.orders} />
@@ -130,13 +141,7 @@ export default function OrdersPage() {
 
             {/* Footer */}
             <View className="p-4 bg-green-900 flex-row gap-2">
-                <TouchableOpacity 
-                  disabled={!connectedDevice}
-                  className={`bg-white py-2 px-4 rounded-md w-[30%] ${!connectedDevice && "hidden"}` }
-                  onPress={() => printBill(order)}
-                >
-                  <Text className="text-center font-semibold text-green-900">Bill Out</Text>
-                </TouchableOpacity>
+                <ReprintOrder order={order} />
                 <PaymentButton order={order} setOrders={setOrders}  />
             </View>
             </View>

@@ -7,9 +7,11 @@ import { menuIngredientsInterface } from "@/types/menu.type";
 import { orderInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
+import { checkIfHasUnli } from "@/utils/customFunction";
 import { printRefill } from "@/utils/print";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Picker } from "@react-native-picker/picker";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   Modal,
@@ -33,6 +35,8 @@ export default function RefillButton({
   const [ingredientSelect, setIngredientSelect] = useState("all");
   const [quantity, setQuantity] = useState(1);
 
+    const queryClient = useQueryClient();
+
   const { connectedDevice } = useBluetooth();
 
   const { data } = useQuery({
@@ -53,6 +57,7 @@ export default function RefillButton({
       axiosInstance.put("/ingredients/refill", data),
     onSuccess: () => {
       successAlert("success");
+      queryClient.refetchQueries({ queryKey: ["ingredients_refill"] });
       setIngredients([]);
       setQuantity(1);
       setIngredientSelect("all");
@@ -112,9 +117,10 @@ export default function RefillButton({
       <TouchableOpacity
         onPress={() => setVisible(true)}
         disabled={!connectedDevice}
-        className={`bg-white rounded-md px-3 py-2 ${!connectedDevice && "hidden"}` }
+        className={`px-3 py-2 bg-emerald-600 rounded-lg ${!connectedDevice || checkIfHasUnli(orders)  && "hidden"}` }
       >
-        <Text className="text-sm font-semibold text-green-900">Refill</Text>
+        <MaterialCommunityIcons name="reload" size={20} color="white" />
+
       </TouchableOpacity>
 
       {/* Modal */}

@@ -7,13 +7,15 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from "react-native";
 
+
+
 export default function Index() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  
+
 
  
 const { setUser } = useUserStore();
@@ -57,7 +59,8 @@ const { setUser } = useUserStore();
 
   return (
     <View className="flex-1 bg-stone-50 justify-center items-center px-6">
-      
+       
+
 
       {/* Form */}
       <View className="w-full max-w-md">
