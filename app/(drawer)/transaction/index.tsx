@@ -8,6 +8,7 @@ import { getOrdersInterface, ordersInterface } from '@/types/orders.type';
 import { getRefillInterface } from '@/types/refill.type';
 import { errorAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
+import { isTime1To3am, plus1Day } from '@/utils/customFunction';
 import { printReceipt, printXReading } from '@/utils/print';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -241,7 +242,7 @@ return (
             <Text className="text-white font-bold text-base">X Reading</Text>
           </TouchableOpacity>
 
-          <ItemXreading ingredients={ingredients} orders={orders}  refills={refill}/>
+          <ItemXreading ingredients={ingredients} orders={orders}  refills={refill} date={date}  />
         </View>
       </View>
 
@@ -308,10 +309,10 @@ return (
             {/* Date & Time Column */}
             <View className="w-[12%]">
               <Text className="text-sm font-semibold text-stone-900">
-                {transaction.date}
+                { (isTime1To3am(transaction.time) ? plus1Day(transaction.date) : transaction.date)}
               </Text>
               <Text className="text-xs text-stone-500 mt-0.5">
-                {transaction.time || "10:00 AM"}
+                {transaction.time}
               </Text>
             </View>
 

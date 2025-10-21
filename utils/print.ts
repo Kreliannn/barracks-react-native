@@ -3,6 +3,7 @@ import { menuIngredientsInterface } from "@/types/menu.type";
 //@ts-ignore
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
 import { orderInterface, ordersInterface } from "../types/orders.type";
+import { isTime1To3am, plus1Day } from "./customFunction";
 
 
 const logo = require("@/assets/barracks.png");
@@ -54,6 +55,7 @@ export const printBill = async (order: ordersInterface) => {
     await BluetoothEscposPrinter.printText("================================\n", {});
     await BluetoothEscposPrinter.printText(`Resto: The Barracks\n`, {});
     await BluetoothEscposPrinter.printText(`Branch: ${order.branch}\n`, {});
+    await BluetoothEscposPrinter.printText(`Date: ${(isTime1To3am(order.time) ? plus1Day(order.date) : order.date )}\n`, {});
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
     await BluetoothEscposPrinter.printText(`Table: ${order.table}\n`, {});
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
@@ -87,6 +89,7 @@ export const printReceipt = async (order: ordersInterface, cash: number) => {
     await BluetoothEscposPrinter.printText("================================\n", {});
     await BluetoothEscposPrinter.printText(`Resto: The Barracks\n`, {});
     await BluetoothEscposPrinter.printText(`Branch: ${order.branch}\n`, {});
+    await BluetoothEscposPrinter.printText(`Date: ${(isTime1To3am(order.time) ? plus1Day(order.date) : order.date )}\n`, {});
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
     await BluetoothEscposPrinter.printText(`Cashier: ${order.cashier}\n`, {});
     await BluetoothEscposPrinter.printText(`Table: ${order.table}\n`, {});
@@ -314,11 +317,17 @@ export default async function PrintQr({ id, branch, manager, date }: any) {
 
 export const printItemXreading = async (
   menu: menuXreadingInterface[],
-  ing: ingredientXreadingInterface[]
+  ing: ingredientXreadingInterface[],
+  date  : Date
 ) => {
+
+ 
+    const formatted = date.toDateString();
+
+
   try {
     await printLogo();
-
+    await BluetoothEscposPrinter.printText(`Date : ${formatted}\n\r`, {});
     await BluetoothEscposPrinter.printText("================================\n\r", {});
     await BluetoothEscposPrinter.printText("       MENU X-READING\n\r", { encoding: "GBK", codepage: 0 });
     await BluetoothEscposPrinter.printText("================================\n\r", {});
@@ -341,12 +350,14 @@ export const printItemXreading = async (
 
     // Ingredient rows (fit narrow paper)
     for (const item of ing) {
-      const line =
+      if(item.total != 0){
+        const line =
         `${item.name.slice(0, 10).padEnd(11)}` + // shorten long names
         `${item.kitchen.toString().padStart(7)}` +
         `${item.refill.toString().padStart(7)}` +
         `${item.total.toString().padStart(6)}\n\r`;
-      await BluetoothEscposPrinter.printText(line, {});
+        await BluetoothEscposPrinter.printText(line, {});
+      }
     }
 
     await BluetoothEscposPrinter.printText("================================\n\r\n\r", {});

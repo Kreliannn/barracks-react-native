@@ -7,7 +7,7 @@ import { menuIngredientsInterface } from "@/types/menu.type";
 import { orderInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
-import { checkIfHasUnli } from "@/utils/customFunction";
+import { checkIfHasUnli, getDate } from "@/utils/customFunction";
 import { printRefill } from "@/utils/print";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Picker } from "@react-native-picker/picker";
@@ -39,6 +39,15 @@ export default function RefillButton({
 
   const { connectedDevice } = useBluetooth();
 
+
+  const now = new Date();
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+
   const { data } = useQuery({
     queryKey: ["ingredients"],
     queryFn: () => axiosInstance.get("/ingredients"),
@@ -54,7 +63,7 @@ export default function RefillButton({
 
   const mutation = useMutation({
     mutationFn: (data: { id: string; qty: number }[]) =>
-      axiosInstance.put("/ingredients/refill", data),
+      axiosInstance.put("/ingredients/refill", {refill : data, date : getDate(time) }),
     onSuccess: () => {
       successAlert("success");
       queryClient.refetchQueries({ queryKey: ["ingredients_refill"] });

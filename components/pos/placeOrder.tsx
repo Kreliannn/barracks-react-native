@@ -6,11 +6,11 @@ import useUserStore from "@/store/user.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
+import { getDate } from "@/utils/customFunction";
 import { printForKitchen, printOrderNumber } from "@/utils/print";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
-
 
 
 
@@ -80,7 +80,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
     if (!user?.fullname || !user?.branch) return Alert.alert("No user");
     if(!connectedDevice)return Alert.alert("No printer");
 
-    const formattedDate = new Date().toISOString().split("T")[0];
+    
 
 
     const orderData = {
@@ -95,7 +95,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
       table,
       cashier: user.fullname,
       branch: user.branch,
-      date: formattedDate.toString(),
+      date: getDate(time),
       time : time,
       status: "active",
       paymentMethod: "pending",

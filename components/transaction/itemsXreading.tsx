@@ -5,17 +5,17 @@ import { getRefillInterface } from "@/types/refill.type";
 import { formatIngridientXreading, formatMenuXreading } from "@/utils/customFunction";
 import { printItemXreading } from "@/utils/print";
 import {
-    Text,
-    TouchableOpacity
+  Text,
+  TouchableOpacity
 } from "react-native";
 
 
-export default function ItemXreading({ orders, ingredients, refills  }: {  refills : getRefillInterface[] ,orders: getOrdersInterface[], ingredients : getIngredientsInterface[] }) {
+export default function ItemXreading({ orders, ingredients, refills, date  }: {date : Date  ,refills : getRefillInterface[] ,orders: getOrdersInterface[], ingredients : getIngredientsInterface[] }) {
   
   const printHandler = () => {
     const formatedMenu = formatMenuXreading(orders)
     const formatIng = formatIngridientXreading(ingredients, orders, refills)
-    printItemXreading(formatedMenu, formatIng)
+    printItemXreading(formatedMenu, formatIng, date)
   }
 
   
