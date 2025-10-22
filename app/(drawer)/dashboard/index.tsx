@@ -1,13 +1,60 @@
 import PrintQrComponent from "@/components/dashboard/printQr";
 import useUserStore from "@/store/user.store";
+import { changeInterface } from "@/types/change.type";
+import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
-import { useQuery } from "@tanstack/react-query";
+import { getDate } from "@/utils/customFunction";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
+
 
 export default function Index() {
   const { user, clearUser } = useUserStore();
+
+  const [change, setChange] = useState(0)
+
+
+  const now = new Date();
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+ 
+
+  const { data : changeData } = useQuery({
+    queryKey: ["change"],
+    queryFn: () => axiosInstance.get("/branch/change/" + getDate(time)),
+  });
+
+  useEffect(() => {
+    if (changeData?.data) setChange(changeData?.data);
+  }, [changeData]);
+
+
+
+  const mutation = useMutation({
+    mutationFn: (data: changeInterface) =>
+      axiosInstance.post("/branch/change", data),
+    onSuccess: (response) => {
+      successAlert("set change")
+    },
+    onError: () => errorAlert("Error"),
+  });
+
+
+
+  const changeHandler = () => {
+    if(change == 0 || !user) return errorAlert("empty value")
+    mutation.mutate({
+      date : getDate(time),
+      change : change,
+      branch : user.branch,
+    })
+  }
 
 
 
@@ -53,9 +100,14 @@ export default function Index() {
 
     {/* Cashier Info */}
     <View className="flex-row items-center justify-between mb-3">
-      <Text className="text-green-900 text-3xl font-extrabold">
-        Cashier Dashboard
+     <View className="bg-white/10 rounded-xl ">
+      <Text className="text-green-800 text-xl font-semibold">
+        cashier: {user?.fullname || "Not Found"}
       </Text>
+      <Text className="text-stone-700 text-lg mt-1">
+        Branch:  {user?.branch || "Not Found"}
+      </Text>
+    </View>
 
       {user!.branch == "Main Branch" && (
         <PrintQrComponent />
@@ -69,14 +121,38 @@ export default function Index() {
       </TouchableOpacity>
     </View>
 
-    <View className="bg-white/10 rounded-xl p-4 mb-6">
-      <Text className="text-green-800 text-xl font-semibold">
-        cashier: {user?.fullname || "Not Found"}
+    
+    <View className="mb-5">
+      <Text className="text-green-800 text-lg font-bold mb-2">
+        Cashier Change :
       </Text>
-      <Text className="text-stone-700 text-lg mt-1">
-        Branch:  {user?.branch || "Not Found"}
-      </Text>
+      <View className="flex-row items-center gap-3">
+        <View
+          className={`flex-1 rounded-xl px-3 py-2 ${
+            change === 0 ? "bg-red-100 border border-red-500" : "bg-white"
+          }`}
+        >
+          <TextInput
+            value={change.toString()}
+            onChangeText={(val) => setChange(Number(val))}
+            placeholder="Enter initial change"
+            keyboardType="numeric"
+            className={`text-base ${
+              change === 0 ? "text-red-600" : "text-green-900"
+            }`}
+          />
+        </View>
+
+        <TouchableOpacity
+          onPress={changeHandler}
+          className="bg-green-600 px-4 py-3 rounded-xl"
+        >
+          <Text className="text-white font-semibold">Save</Text>
+        </TouchableOpacity>
+      </View>
     </View>
+
+
 
     {/* Stats Boxes */}
     <View className="flex-row gap-4">

@@ -8,8 +8,8 @@ import { getOrdersInterface, ordersInterface } from '@/types/orders.type';
 import { getRefillInterface } from '@/types/refill.type';
 import { errorAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
-import { isTime1To3am, plus1Day } from '@/utils/customFunction';
-import { printReceipt, printXReading } from '@/utils/print';
+import { getDate, isTime1To3am, plus1Day } from '@/utils/customFunction';
+import { printReceipt, printXReading, printZReading } from '@/utils/print';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from 'react';
@@ -37,6 +37,8 @@ export default function TransactionPage() {
   const {user} = useUserStore()
 
   const {connectedDevice} = useBluetooth()
+
+  
 
 
   const [ingredients, setIngredients] = useState<getIngredientsInterface[]>([])
@@ -101,8 +103,26 @@ export default function TransactionPage() {
     if (data?.data) setOrders(data?.data.reverse());
   }, [data]);
 
-  const handleXreading = () => {
+
+  const [change, setChange] = useState(0)
+
+  const { data: changeData } = useQuery({
+    queryKey: ["change_1", date.toISOString().split("T")[0]],
+    queryFn: () => {
+      const formattedDate = date.toISOString().split("T")[0];
+      return axiosInstance.get("/branch/change/" + formattedDate);
+    },
+  });
+
+  useEffect(() => {
+    if (changeData?.data){
+      setChange(changeData.data.change);
+    } 
+  }, [changeData]);
+
+  const handleReading = (type : string) => {
     if(!user) return
+
 
     const sales : salesInterface = {
       cash:  {total : 0 ,sales : { amount : 0, qty : 0}, refund : { amount : 0, qty : 0}},
@@ -148,7 +168,7 @@ export default function TransactionPage() {
               sales.gcash.sales.qty += 1;
               sales.gcash.total += order.grandTotal
             } else {
-             // sales.gcash.refund.amount += order.grandTotal;
+             /// sales.gcash.refund.amount += order.grandTotal;
               //sales.gcash.refund.qty += 1;
               //sales.gcash.total -= order.grandTotal
             }
@@ -204,7 +224,15 @@ export default function TransactionPage() {
       
     });
 
-    printXReading(sales, user.fullname)
+    const firstOrderDate = (orders.length != 0) ? orders[0].date : getDate(date.toISOString().split('T')[0])
+
+   
+
+    if(type == "x"){
+      printXReading(sales, user.fullname, firstOrderDate)
+    } else {
+      printZReading(sales, user.fullname, firstOrderDate, change)
+    }
 
    
   };
@@ -235,11 +263,19 @@ return (
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={handleXreading}
+            onPress={() => handleReading("x")}
             className={`px-6 py-3 bg-green-900 rounded-xl shadow-md active:scale-95 ${!connectedDevice && "hidden"} mr-2`}
             style={{ elevation: 3 }}
           >
             <Text className="text-white font-bold text-base">X Reading</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => handleReading("z")}
+            className={`px-6 py-3 bg-green-900 rounded-xl shadow-md active:scale-95 ${!connectedDevice && "hidden"} mr-2`}
+            style={{ elevation: 3 }}
+          >
+            <Text className="text-white font-bold text-base">Z Reading</Text>
           </TouchableOpacity>
 
           <ItemXreading ingredients={ingredients} orders={orders}  refills={refill} date={date}  />

@@ -226,16 +226,13 @@ export const printRefill = async (connectedDevice : string ,ingridients : menuIn
     await BluetoothEscposPrinter.printText("\n\r------------------------\n\r\n\r", {});
 }
 
-export const printXReading = async (sales: salesInterface, cashier: string) => {
+export const printXReading = async (sales: salesInterface, cashier: string, date:string) => {
+  
   const now = new Date();
-  const formatted = now.toLocaleString("en-US", {
+  const time = now.toLocaleTimeString("en-US", {
     hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
+    minute: "2-digit",
     hour12: true,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
   });
 
   try {
@@ -245,7 +242,7 @@ export const printXReading = async (sales: salesInterface, cashier: string) => {
     });
     await BluetoothEscposPrinter.printText("================================\n\r", {});
 
-    await BluetoothEscposPrinter.printText(`Date: ${formatted}\n\r`, {});
+    await BluetoothEscposPrinter.printText(`Date: ${date} : ${time}\n\r`, {});
     await BluetoothEscposPrinter.printText(`Printed By:   ${cashier}\n\r`, {});
     await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
 
@@ -302,6 +299,97 @@ export const printXReading = async (sales: salesInterface, cashier: string) => {
     console.log("X Reading Print error:", err);
   }
 }
+
+
+
+
+export const printZReading = async (sales: salesInterface, cashier: string, date:string, change : number) => {
+  
+  const now = new Date();
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  try {
+    await BluetoothEscposPrinter.printText("Z-READING REPORT\n\r", {
+      widthtimes: 1,
+      heigthtimes: 1,
+    });
+    await BluetoothEscposPrinter.printText("================================\n\r", {});
+
+    await BluetoothEscposPrinter.printText(`Date: ${date} : ${time}\n\r`, {});
+    await BluetoothEscposPrinter.printText(`Printed By:   ${cashier}\n\r`, {});
+    await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+
+    const payments = [
+      { name: "Cash", data: sales.cash },
+      { name: "Debit Card", data: sales.debitCard },
+      { name: "GCash", data: sales.gcash },
+      { name: "PayMaya", data: sales.payMaya },
+      { name: "GrabPay", data: sales.grabPayment },
+      { name: "Cheque", data: sales.chequePayment },
+    ];
+
+    for (const p of payments) {
+      await BluetoothEscposPrinter.printText("\n================================\n\r", {});
+
+      const label = p.name.padEnd(12);
+      const headers = "Qty".padEnd(8) + "Amount".padStart(10);
+      await BluetoothEscposPrinter.printText(label + headers + "\n\r", {});
+
+      await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+
+      const salesQty = String(p.data.sales.qty).padEnd(8);
+      const salesAmt = p.data.sales.amount.toFixed(2).padStart(10);
+      await BluetoothEscposPrinter.printText("Sales".padEnd(12) + salesQty + salesAmt + "\n\r", {});
+
+      const refundQty = String(p.data.refund.qty).padEnd(8);
+      const refundAmt = p.data.refund.amount.toFixed(2).padStart(10);
+      await BluetoothEscposPrinter.printText("Refund".padEnd(12) + refundQty + refundAmt + "\n\r", {});
+      await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+
+      const totalQty = String(p.data.sales.qty + p.data.refund.qty).padEnd(8);
+      const totalAmt = p.data.total.toFixed(2).padStart(10);
+      await BluetoothEscposPrinter.printText("Net".padEnd(12) + totalQty + totalAmt + "\n\r", {});
+      await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+    }
+
+    await BluetoothEscposPrinter.printText("\n\r", {});
+
+    await BluetoothEscposPrinter.printText(
+      `Total VAT:     ${sales.totalVat.toFixed(2).padStart(14)}\n\r`,
+      {}
+    );
+    await BluetoothEscposPrinter.printText(
+      `Service Fee:   ${sales.serviceFee.toFixed(2).padStart(14)}\n\r`,
+      {}
+    );
+
+    await BluetoothEscposPrinter.printText("--------------------------------\n\r", {});
+
+    await BluetoothEscposPrinter.printText(
+      `Total Sales:   ${sales.totalSales.toFixed(2).padStart(14)}\n\r`,
+      {}
+    );
+
+    await BluetoothEscposPrinter.printText(
+      `Initial Change:   ${change.toFixed(2).padStart(14)}\n\r`,
+      {}
+    );
+
+    await BluetoothEscposPrinter.printText(
+      `Total Drawer:   ${(change + sales.totalSales).toFixed(2).padStart(14)}\n\r`,
+      {}
+    );
+
+    await BluetoothEscposPrinter.printText("================================\n\r\n\r", {});
+  } catch (err) {
+    console.log("X Reading Print error:", err);
+  }
+}
+
 
 export default async function PrintQr({ id, branch, manager, date }: any) {
   await BluetoothEscposPrinter.printText("================================\n\r\n\r", {});
@@ -365,3 +453,6 @@ export const printItemXreading = async (
     console.error("🧾 Print failed:", e);
   }
 };
+
+
+
