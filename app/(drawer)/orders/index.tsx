@@ -9,7 +9,7 @@ import TableTimer from '@/components/orders/tableTimer';
 import { useBluetooth } from '@/provider/bluetoothProvider';
 import { getOrdersInterface } from '@/types/orders.type';
 import axiosInstance from '@/utils/axios';
-import { checkIfHasUnli } from '@/utils/customFunction';
+import { checkIfHasUnli, isTime1To3am, plus1Day } from '@/utils/customFunction';
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
@@ -129,7 +129,7 @@ export default function OrdersPage() {
                 <View className="flex-row justify-between items-center">
                   <Text className="text-sm font-medium text-gray-600">Date:</Text>
                   <Text className="text-sm font-semibold text-gray-800">
-                    {order.time} {order.date}
+                    {order.time} { isTime1To3am(order.time) ? plus1Day(order.date) : order.date  }
                   </Text>
                 </View>
             </View>

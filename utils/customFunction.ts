@@ -63,20 +63,25 @@ export function isTime1To3am(time: string) {
 
 export function getDate(time: string) {
   if (!isTime1To3am(time)) {
-    return new Date().toISOString().split("T")[0];
+    return new Date().toLocaleDateString('en-CA');
   } else {
     const date = new Date();
     date.setDate(date.getDate() - 1);
-    return date.toISOString().split("T")[0];
+    return date.toLocaleDateString('en-CA');
   }
 }
 
 export function plus1Day(date: string) {
   const d = new Date(date);
   d.setDate(d.getDate() + 1);
-  return d.toISOString().split("T")[0];
+  return d.toLocaleDateString('en-CA');
 }
 
+export function minus1Day(date: string) {
+  const d = new Date(date);
+  d.setDate(d.getDate() - 1);
+  return d.toLocaleDateString('en-CA');
+}
 
 export function formatMenuXreading(orders: getOrdersInterface[]) {
   interface menuXreadingInterface {

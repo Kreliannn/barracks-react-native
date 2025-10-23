@@ -31,7 +31,7 @@ export default function Index() {
   });
 
   useEffect(() => {
-    if (changeData?.data) setChange(changeData?.data);
+    if (changeData?.data) setChange(changeData?.data.change);
   }, [changeData]);
 
 
@@ -67,7 +67,7 @@ export default function Index() {
 
   const { data } = useQuery({
     queryKey: ["cashier"],
-    queryFn: () => axiosInstance.get("/branch/cashier"),
+    queryFn: () => axiosInstance.get("/branch/cashier/" +  getDate(time)),
   });
 
   useEffect(() => {

@@ -62,18 +62,26 @@ export const printBill = async (order: ordersInterface) => {
     await BluetoothEscposPrinter.printText("Item                 Qty  Price\n", {});
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
 
+    const discountTypes : string[] = []
+
     for (const item of order.orders) {
       const name = item.name.padEnd(20);
       const qty = String(item.qty).padStart(3);
       const price = (item.price - item.discount).toFixed(2);
+      if(item.discountType != "none"){
+        if(!discountTypes.includes(item.discountType)) discountTypes.push(item.discountType)
+      }
       await BluetoothEscposPrinter.printText(`${name}${qty}  ${price}\n`, { encoding: "GBK" });
     }
 
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
     await BluetoothEscposPrinter.printText(`Subtotal:                ${order.subTotal.toFixed(2)}\n`, {});
-    await BluetoothEscposPrinter.printText(`Discount:                ${order.totalDiscount.toFixed(2)}\n`, {});
     await BluetoothEscposPrinter.printText(`VAT (12%):               ${order.vat.toFixed(2)}\n`, {});
     await BluetoothEscposPrinter.printText(`Service Charge (10%):    ${order.serviceFee.toFixed(2)}\n`, {});
+    if(discountTypes.length != 0){
+      await BluetoothEscposPrinter.printText(`Discount:               ${order.totalDiscount.toFixed(2)}\n`, {});
+      await BluetoothEscposPrinter.printText(`-${discountTypes}\n`, {});
+    }
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
     await BluetoothEscposPrinter.printText(`TOTAL BILL:             ${order.grandTotal.toFixed(2)}\n`, {});
     await BluetoothEscposPrinter.printText("================================\n\n\n", {});
@@ -96,19 +104,30 @@ export const printReceipt = async (order: ordersInterface, cash: number) => {
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
     await BluetoothEscposPrinter.printText("Item                 Qty  Price\n", {});
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
+    
+    const discountTypes : string[] = []
 
     for (const item of order.orders) {
       const name = item.name.padEnd(20);
       const qty = String(item.qty).padStart(3);
       const price = (item.price - item.discount).toFixed(2);
+      if(item.discountType != "none"){
+        if(!discountTypes.includes(item.discountType)) discountTypes.push(item.discountType)
+      }
       await BluetoothEscposPrinter.printText(`${name}${qty}  ${price}\n`, { encoding: "GBK", codepage: 0 });
     }
 
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
     await BluetoothEscposPrinter.printText(`Subtotal:               ${order.subTotal.toFixed(2)}\n`, {});
-    await BluetoothEscposPrinter.printText(`Discount:               ${order.totalDiscount.toFixed(2)}\n`, {});
     await BluetoothEscposPrinter.printText(`VAT (12%):              ${order.vat.toFixed(2)}\n`, {});
     await BluetoothEscposPrinter.printText(`Service Charge (10%):   ${order.serviceFee.toFixed(2)}\n`, {});
+
+    if(discountTypes.length != 0){
+      await BluetoothEscposPrinter.printText(`Discount:               ${order.totalDiscount.toFixed(2)}\n`, {});
+      await BluetoothEscposPrinter.printText(`-${discountTypes}\n`, {});
+    }
+   
+
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
     await BluetoothEscposPrinter.printText(`GRAND TOTAL:             ${order.grandTotal.toFixed(2)}\n`, {});
     await BluetoothEscposPrinter.printText("--------------------------------\n", {});
@@ -375,7 +394,7 @@ export const printZReading = async (sales: salesInterface, cashier: string, date
     );
 
     await BluetoothEscposPrinter.printText(
-      `Initial Change:   ${change.toFixed(2).padStart(14)}\n\r`,
+      `Initial Change:   ${change.toFixed(2).padStart(11)}\n\r`,
       {}
     );
 

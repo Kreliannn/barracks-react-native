@@ -3,6 +3,7 @@ import useActiveTableStore from "@/store/activeTable.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
+import { printReceipt } from "@/utils/print";
 import { Picker } from "@react-native-picker/picker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -15,7 +16,6 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-
 
 
 export default function PaymentButton({ order, setOrders }:  { order: getOrdersInterface, setOrders :  React.Dispatch<React.SetStateAction<getOrdersInterface[]>> }) {
@@ -40,6 +40,8 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
                 setPayment(0)
                
                 queryClient.refetchQueries({ queryKey: ["receipt"] });
+                queryClient.refetchQueries({ queryKey: ["cashier"] });
+                
              
                 setVisible(false)
 
@@ -59,7 +61,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
         } 
         removeTable(order.table)
         mutation.mutate({ id : order._id , paymentMethod, orderNumber : order.orderNumber})
-        //printReceipt(order, payment)
+        printReceipt(order, payment)
     }
 
    

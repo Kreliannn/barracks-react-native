@@ -8,7 +8,7 @@ import { getOrdersInterface, ordersInterface } from '@/types/orders.type';
 import { getRefillInterface } from '@/types/refill.type';
 import { errorAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
-import { getDate, isTime1To3am, plus1Day } from '@/utils/customFunction';
+import { getDate, isTime1To3am, minus1Day, plus1Day } from '@/utils/customFunction';
 import { printReceipt, printXReading, printZReading } from '@/utils/print';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -38,7 +38,14 @@ export default function TransactionPage() {
 
   const {connectedDevice} = useBluetooth()
 
-  
+  const [isCurrentDate, setIsCurrentDate] = useState(true); 
+
+  const now = new Date();
+  const time = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 
 
   const [ingredients, setIngredients] = useState<getIngredientsInterface[]>([])
@@ -61,15 +68,14 @@ export default function TransactionPage() {
   const [refill, setRefill] = useState<getRefillInterface[]>([])
 
    const { data : refillData  } = useQuery({
-        queryKey: ["ingredients_refill"],
-        queryFn: () => axiosInstance.get("/ingredients/refill/" +  date.toISOString().split('T')[0]),
+        queryKey: ["ingredients_refill",  date.toLocaleDateString('en-CA')],
+        queryFn: () => axiosInstance.get("/ingredients/refill/" +  date.toLocaleDateString('en-CA')),
   })
 
 
   useEffect(() => {
         if(refillData?.data){
             setRefill(refillData?.data)
-            console.log(refillData?.data)
         } 
   }, [refillData])
 
@@ -78,7 +84,7 @@ export default function TransactionPage() {
    const mutation = useMutation({
     mutationFn: (date: string) => axiosInstance.get("/order/orderHistory/" + date),
     onSuccess: (response) => {
-      setOrders(response.data)
+      setOrders(response.data.reverse())
     },
     onError: () => {
       errorAlert("Error");
@@ -96,20 +102,23 @@ export default function TransactionPage() {
 
   const { data } = useQuery({
     queryKey: ["receipt"],
-    queryFn: () => axiosInstance.get("/order/orderHistory")
+    queryFn: () => axiosInstance.get("/order/orderHistory/" + getDate(time))
   });
 
   useEffect(() => {
-    if (data?.data) setOrders(data?.data.reverse());
+    if (data?.data){
+      setOrders(data?.data.reverse());
+    }   
   }, [data]);
 
 
   const [change, setChange] = useState(0)
 
   const { data: changeData } = useQuery({
-    queryKey: ["change_1", date.toISOString().split("T")[0]],
+    queryKey: ["change_1", date.toLocaleDateString('en-CA')],
     queryFn: () => {
-      const formattedDate = date.toISOString().split("T")[0];
+      let formattedDate = date.toLocaleDateString('en-CA');
+      if(isCurrentDate && isTime1To3am(time)) formattedDate = minus1Day(formattedDate)
       return axiosInstance.get("/branch/change/" + formattedDate);
     },
   });
@@ -224,7 +233,7 @@ export default function TransactionPage() {
       
     });
 
-    const firstOrderDate = (orders.length != 0) ? orders[0].date : getDate(date.toISOString().split('T')[0])
+    const firstOrderDate = (orders.length != 0) ? orders[0].date : getDate(date.toLocaleDateString('en-CA'))
 
    
 
@@ -249,7 +258,7 @@ return (
         <View className="flex-1">
           <Text className="text-2xl font-bold text-green-900">Transaction History</Text>
           <Text className="text-sm text-emerald-700 mt-1">
-            {orders.length} transactions for {date.toLocaleDateString()}
+            {orders.length} transactions for { isTime1To3am(time) && isCurrentDate ? minus1Day(date.toLocaleDateString('en-CA')) :   date.toLocaleDateString()}
           </Text>
         </View>
 
@@ -291,7 +300,8 @@ return (
             setShowPicker(false);
             if (selectedDate){
               setDate(selectedDate);
-              const formattedDate = selectedDate.toISOString().split('T')[0];
+              setIsCurrentDate(false)
+              const formattedDate = selectedDate.toLocaleDateString('en-CA');
               changeHistoryByDate(formattedDate)
             } 
           }}

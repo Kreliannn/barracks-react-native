@@ -1,7 +1,4 @@
 import { orderInterface } from "@/types/orders.type";
-import { errorAlert, successAlert } from "@/utils/alert";
-import axiosInstance from "@/utils/axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   Modal,
@@ -10,29 +7,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import ApplyDiscount from "./discount";
 
 export default function OrderList({ orders, orderId }: { orders: orderInterface[] , orderId : string}) {
   const [visible, setVisible] = useState(false);
 
-   const queryClient = useQueryClient();
-
-   const mutation = useMutation({
-        mutationFn: (data: { orderId : string , itemId : string}) =>
-        axiosInstance.put("/order/applyDiscount", data),
-            onSuccess: (response) => {
-                successAlert("discount applied")
-                queryClient.refetchQueries({ queryKey: ["order"] });
-                setVisible(false)
-            },
-            onError: (err) => {
-                errorAlert("error")
-                setVisible(false)
-            },
-    })
-
-    const applyDiscountHnalder = (itemId : string) => {
-      mutation.mutate({ orderId, itemId})
-    }
+   
 
   return (
     <>
@@ -128,14 +108,7 @@ export default function OrderList({ orders, orderId }: { orders: orderInterface[
                     </View>
 
                     <View className="w-[15%] items-center justify-center">
-                      <TouchableOpacity
-                        onPress={() => applyDiscountHnalder(item.item_id)}
-                        className={`bg-red-600 px-3 py-2 rounded-xl shadow-sm active:scale-95 ${
-                          item.discountType != "none" && "hidden"
-                        }`}
-                      >
-                        <Text className="text-white text-xs font-semibold">Discount</Text>
-                      </TouchableOpacity>
+                      <ApplyDiscount order={item} orderId={orderId} />
                     </View>
 
                 </View>
