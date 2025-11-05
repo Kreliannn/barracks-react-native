@@ -4,7 +4,11 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 type User = {
   fullname: string;
-  role: string;
+  role: {
+        isAdmin : boolean,
+        isCashier : boolean,
+        isManager : boolean,
+  };
   branch: string;
 } | null;
 

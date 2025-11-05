@@ -27,11 +27,11 @@ const { setUser } = useUserStore();
     onSuccess: async (res) => {
       const { fullname, role, branch, token } = res.data;
 
-      if(role != "cashier"){
+      if(!role.isCashier){
         setIsLoading(false)
         errorAlert("cashier account only")
         return 
-      } 
+      }
 
       await AsyncStorage.setItem("token", token);
       setUser({ fullname, role, branch });
