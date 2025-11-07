@@ -91,7 +91,7 @@ export default function SplitOrders({
       cashier: order.cashier,
       branch: order.branch,
       date: order.date,
-      time: order.date,
+      time: order.time,
       status: "active",
       paymentMethod: "pending",
       orderNumber : 0
