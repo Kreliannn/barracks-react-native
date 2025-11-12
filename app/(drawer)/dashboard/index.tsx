@@ -1,6 +1,6 @@
 import PrintQrComponent from "@/components/dashboard/printQr";
 import useUserStore from "@/store/user.store";
-import { changeInterface } from "@/types/change.type";
+import { changeInterface, getChangeInterface } from "@/types/change.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { getDate } from "@/utils/customFunction";
@@ -14,7 +14,7 @@ export default function Index() {
   const { user, clearUser } = useUserStore();
 
   const [change, setChange] = useState(0)
-
+  const [shift, setShift] = useState<getChangeInterface | null>(null)
 
   const now = new Date();
   const time = now.toLocaleTimeString("en-US", {
@@ -25,13 +25,20 @@ export default function Index() {
 
  
 
-  const { data : changeData } = useQuery({
+  const { data : changeData, refetch } = useQuery({
     queryKey: ["change"],
     queryFn: () => axiosInstance.get("/branch/change/" + getDate(time)),
   });
 
   useEffect(() => {
-    if (changeData?.data) setChange(changeData?.data.change);
+    if (changeData?.data){
+      if(changeData?.data == "no change"){
+        successAlert("enter change to start shift")
+      } else {
+        setChange(changeData?.data.change);
+        setShift(changeData?.data)
+      } 
+    } 
   }, [changeData]);
 
 
@@ -41,6 +48,16 @@ export default function Index() {
       axiosInstance.post("/branch/change", data),
     onSuccess: (response) => {
       successAlert("set change")
+      refetch()
+    },
+    onError: () => errorAlert("Error"),
+  });
+
+  const mutationEndShift = useMutation({
+    mutationFn: (data: {id : string, end : string}) =>
+      axiosInstance.patch("/branch/endShift", data),
+    onSuccess: (response) => {
+      successAlert("shift ended")
     },
     onError: () => errorAlert("Error"),
   });
@@ -53,6 +70,16 @@ export default function Index() {
       date : getDate(time),
       change : change,
       branch : user.branch,
+      start : `${new Date().toLocaleDateString('en-CA')} ${time}`,
+      end  : "ongoing"
+    })
+  }
+
+  const endShiftHandler = () => {
+    if(!shift) return  errorAlert("shift not found")
+    mutationEndShift.mutate({
+      id : shift._id,
+      end : `${new Date().toLocaleDateString('en-CA')} ${time}`
     })
   }
 
@@ -77,7 +104,6 @@ export default function Index() {
   const logout = () => {
     router.push("/"); 
   }
-
 
 
   return (
@@ -121,38 +147,57 @@ export default function Index() {
       </TouchableOpacity>
     </View>
 
-    
-    <View className="mb-5">
-      <Text className="text-green-800 text-lg font-bold mb-2">
-        Cashier Change :
-      </Text>
-      <View className="flex-row items-center gap-3">
-        <View
-          className={`flex-1 rounded-xl px-3 py-2 ${
-            change === 0 ? "bg-red-100 border border-red-500" : "bg-white"
-          }`}
-        >
-          <TextInput
-            value={change.toString()}
-            onChangeText={(val) => setChange(Number(val))}
-            placeholder="Enter initial change"
-            keyboardType="numeric"
-            className={`text-base ${
-              change === 0 ? "text-red-600" : "text-green-900"
-            }`}
-          />
-        </View>
 
-        <TouchableOpacity
-          onPress={changeHandler}
-          className="bg-green-600 px-4 py-3 rounded-xl"
-        >
-          <Text className="text-white font-semibold">Save</Text>
-        </TouchableOpacity>
+
+    <View className="flex-row justify-between items-start gap-5 mb-4">
+      {/* Cashier Change Section */}
+      <View className="flex-1">
+        <Text className="text-green-800 text-lg font-bold mb-2">
+          Cashier Change :
+        </Text>
+        <View className="flex-row items-center gap-3">
+          <View
+            className={`flex-1 rounded-xl px-3 py-2 ${
+              change === 0 ? "bg-red-100 border border-red-500" : "bg-white"
+            }`}
+          >
+            <TextInput
+              value={change.toString()}
+              onChangeText={(val) => setChange(Number(val))}
+              placeholder="Enter initial change"
+              keyboardType="numeric"
+              className={`text-base ${
+                change === 0 ? "text-red-600" : "text-green-900"
+              }`}
+            />
+          </View>
+
+          <TouchableOpacity
+            onPress={changeHandler}
+            className="bg-green-600 px-4 py-3 rounded-xl"
+          >
+            <Text className="text-white font-semibold">Save</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
+      {/* End Shift Section */}
+      {(shift != null) && (
+        <View className="items-end p-2">
+          <Text className="text-red-800 text-lg font-bold mb-2 ">End Shift :</Text>
+          <TouchableOpacity className="bg-red-600 px-10 py-3 rounded-xl" onPress={endShiftHandler} >
+            <Text className="text-white font-semibold">End</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+   
+
     </View>
 
 
+    
+
+    
 
     {/* Stats Boxes */}
     <View className="flex-row gap-4">

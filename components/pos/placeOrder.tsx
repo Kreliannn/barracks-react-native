@@ -99,7 +99,8 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
       time : time,
       status: "active",
       paymentMethod: "pending",
-      orderNumber : 0
+      orderNumber : 0,
+      unliTimer : "waiting"
     };
 
     addTable(table);

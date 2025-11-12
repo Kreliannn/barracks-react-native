@@ -6,18 +6,18 @@ import RefillButton from '@/components/orders/refillButton';
 import ReprintOrder from '@/components/orders/reprintOrder';
 import SplitOrders from '@/components/orders/splitOrders';
 import TableTimer from '@/components/orders/tableTimer';
-import { useBluetooth } from '@/provider/bluetoothProvider';
 import { getOrdersInterface } from '@/types/orders.type';
+import { errorAlert, successAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
 import { checkIfHasUnli, isTime1To3am, plus1Day } from '@/utils/customFunction';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<getOrdersInterface[]>([]);
   
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["order"],
     queryFn: () => axiosInstance.get("/order/active")
   });
@@ -26,9 +26,31 @@ export default function OrdersPage() {
     if (data?.data) setOrders(data?.data);
   }, [data]);
 
-  const {connectedDevice} = useBluetooth()
+  const mutation = useMutation({
+    mutationFn: (data: { id : string , time : string }) =>
+    axiosInstance.put("/order/startTimer", data),
+        onSuccess: (response) => {
+            successAlert("timer start")
+            refetch()
+        },
+        onError: (err) => {
+            errorAlert("error")
+        },
+  })
 
+  const startTimer = (id: string) => {
+    const now = new Date();
+    const time = now.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
 
+    mutation.mutate({
+       id : id , 
+       time : time
+    })
+  }
   
 
   return (
@@ -54,9 +76,19 @@ export default function OrdersPage() {
             <View className="flex-row justify-between items-center mb-1 gap-2">
               <Text className="text-xl font-bold text-white">{order.table}</Text>
 
-              {!checkIfHasUnli(order.orders) && (
-                <TableTimer time={order.time} />
+              {(!checkIfHasUnli(order.orders) && order.unliTimer != "waiting") && (
+                <TableTimer time={order.unliTimer} />
               )}
+
+              {(!checkIfHasUnli(order.orders) && order.unliTimer == "waiting") && (
+                <TouchableOpacity
+                   onPress={() => startTimer(order._id)}
+                   className="ms-2  p-1 px-2 bg-white rounded-lg"
+                 >
+                    <Text className='text-stone-700 font-bold'> start Timer</Text>
+                 </TouchableOpacity>
+              )}
+
             </View>
 
 
