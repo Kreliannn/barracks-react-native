@@ -70,7 +70,7 @@ export default function Index() {
       date : getDate(time),
       change : change,
       branch : user.branch,
-      start : `${new Date().toLocaleDateString('en-CA')} ${time}`,
+      start : `${new Date().toLocaleDateString('en-CA')} (${time})`,
       end  : "ongoing"
     })
   }
@@ -79,7 +79,7 @@ export default function Index() {
     if(!shift) return  errorAlert("shift not found")
     mutationEndShift.mutate({
       id : shift._id,
-      end : `${new Date().toLocaleDateString('en-CA')} ${time}`
+      end : `${new Date().toLocaleDateString('en-CA')} (${time})`
     })
   }
 
