@@ -1,5 +1,5 @@
 import useOrderStore from "@/store/cart.store";
-import { getTotaldiscount, getTotalVat, getTotalWithVat } from "@/utils/customFunction";
+import { getTotaldiscount, getTotalWithVat } from "@/utils/customFunction";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { PlaceOrderButton } from "./placeOrder";
 
@@ -9,11 +9,20 @@ export function CartComponent({ table }: { table: string }) {
   const totalWithVat = getTotalWithVat(cartItems);
   const subTotal = getTotalWithVat(cartItems);
   const totalDiscount = getTotaldiscount(cartItems);
-  const vat = getTotalVat(cartItems);
+
+  // temporary 
+  // const vat = getTotalVat(cartItems);
+  
+  // delete later
+  const vat = 0
+
+
   let serviceFee = subTotal * 0.1;
 
   if(table == "Take Away") serviceFee = 0
 
+  //temporary delete later
+  serviceFee = 0
 
   const discountedTotal = (totalWithVat - totalDiscount) + serviceFee;
 
