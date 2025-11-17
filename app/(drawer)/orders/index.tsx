@@ -10,11 +10,18 @@ import { getOrdersInterface } from '@/types/orders.type';
 import { errorAlert, successAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
 import { checkIfHasUnli, isTime1To3am, plus1Day } from '@/utils/customFunction';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
+type OrdersPageProps = DrawerNavigationProp<any>; 
+
+
 export default function OrdersPage() {
+  const navigation = useNavigation<OrdersPageProps>();
+
   const [orders, setOrders] = useState<getOrdersInterface[]>([]);
   
   const { data, refetch } = useQuery({
@@ -51,12 +58,25 @@ export default function OrdersPage() {
        time : time
     })
   }
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => refetch()}
+          className="bg-green-500 p-2 rounded-md"
+        >
+          <Text className="text-white font-bold">Reload</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, refetch]);
   
 
   return (
-    <View className="h-full w-full flex-col">
-      
-      
+    <View className="h-full w-full flex-col relative">
+
+
       <View className="flex-1 overflow-y-auto p-6 bg-stone-100">
      <FlatList
       data={orders}
@@ -70,6 +90,8 @@ export default function OrdersPage() {
           key={index}
           className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden flex-1"
         >
+
+
           {/* Header */}
           <View className="bg-green-900 p-4 flex-row items-center justify-between">
 
@@ -181,6 +203,8 @@ export default function OrdersPage() {
         />
 
 
+
+
         
         {orders.length === 0 && (
           <View className="text-center py-12">
@@ -188,7 +212,12 @@ export default function OrdersPage() {
             <Text className="text-gray-500 text-sm mt-2">Orders will appear here once they are placed</Text>
           </View>
         )}
+
+
       </View>
+
+      
+
     </View>
   );
 }

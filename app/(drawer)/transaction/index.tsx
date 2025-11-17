@@ -102,7 +102,7 @@ export default function TransactionPage() {
 
   const { data } = useQuery({
     queryKey: ["receipt"],
-    queryFn: () => axiosInstance.get("/order/orderHistory/" + getDate(time))
+    queryFn: () => axiosInstance.get("/order/orderHistory/" + getDate(time)),
   });
 
   useEffect(() => {

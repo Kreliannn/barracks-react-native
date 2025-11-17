@@ -68,7 +68,9 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
 
         printForKitchen(order.orders, order.table, order.orderNumber)
 
-        printOrderNumberHandler(order.orderNumber)
+
+        // temporary
+        //printOrderNumberHandler(order.orderNumber)
 
     },
     onError: () => {
@@ -79,9 +81,6 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
   const handlePlaceOrder = async () => {
     if (!user?.fullname || !user?.branch) return Alert.alert("No user");
     if(!connectedDevice)return Alert.alert("No printer");
-
-    
-
 
     const orderData = {
       orders,
