@@ -214,7 +214,7 @@ export default function Index() {
       {/* Active Tables */}
       <View className="flex-1 bg-white rounded-2xl py-6 px-4 items-center shadow-lg">
         <Text className="text-green-700 text-lg font-semibold mb-1">
-          Active Tables
+          Active orders
         </Text>
         <Text className="text-green-900 text-4xl font-extrabold">
           {dashboardData.activeTatble}

@@ -68,7 +68,7 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
         //printReceipt(order, payment)
 
         // temporary delete later
-        printOrderNumber(order.orderNumber)
+        printOrderNumber(order.orderNumber, order.date, order.time)
     }
 
    

@@ -11,7 +11,7 @@ export default function ReprintOrder({ order }: { order: ordersInterface }) {
   const {connectedDevice} = useBluetooth()
 
   const orderNumberHandler = () => {
-    printOrderNumber(order.orderNumber);
+    printOrderNumber(order.orderNumber, order.date, order.time);
     setVisible(false);
   };
 

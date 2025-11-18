@@ -15,8 +15,6 @@ export default function PosPage() {
  
   const { table, setTable } = useTableStore()
 
-
-
    const [menuData, setMenuData] = useState<getMenuInterface[]>([])
     const [menu, setMenu] = useState<getMenuInterface[]>([])
 

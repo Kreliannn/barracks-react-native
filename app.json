@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "The Barracks",
-    "slug": "barracks-mobile-app",
+    "slug": "Barracks",
     "version": "1.0.0",
     "orientation": "landscape",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icon.png",
     "scheme": "barracksmobileapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -12,8 +12,9 @@
       "supportsTablet": true
     },
     "android": {
+      "name" : "The Barracks",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": false,

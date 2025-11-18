@@ -78,7 +78,7 @@ export default function OrdersPage() {
             </Text>
         
             <Text className="text-gray-600 text-xs">
-                {order.date} • {order.time}
+                {order.time} • {order.date}
             </Text>
             </View>
         

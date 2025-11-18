@@ -187,11 +187,11 @@ export const printForKitchen = async (orders : orderInterface[], table : string,
     await BluetoothEscposPrinter.printText("\n\r------------------------\n\r\n\r", {});
 }
 
-export const printOrderNumber = async (orderNumber: number) => {
+export const printOrderNumber = async (orderNumber: number, date : string, time : string) => {
   try {
     await printLogo();
 
-    await BluetoothEscposPrinter.printText(`Order Number:\n`, {});
+    await BluetoothEscposPrinter.printText(`Order Number: \n`, {});
     await BluetoothEscposPrinter.printText("================================\n", {});
     await BluetoothEscposPrinter.printText(
       `          ${orderNumber}\n\r`,
@@ -203,7 +203,10 @@ export const printOrderNumber = async (orderNumber: number) => {
         fonttype: 1,
       }
     );
-    await BluetoothEscposPrinter.printText("\n================================\n\n\n", {});
+    
+    await BluetoothEscposPrinter.printText("\n================================\n", {});
+    await BluetoothEscposPrinter.printText(`     ${time} - ${date}\n\n\n`, {});
+    
   } catch (err) {
     console.error("❌ printOrderNumber error:", err);
   }
