@@ -1,10 +1,9 @@
 import CompleteButton from '@/components/pending/completeButton';
 import { getOrdersInterface } from '@/types/orders.type';
-import { errorAlert, successAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Dimensions, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
@@ -27,26 +26,7 @@ export default function OrdersPage() {
 
   const cardWidth = (Dimensions.get("window").width / 3) - 16; 
 
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (data: { id : string , orderNumber : number }) =>
-    axiosInstance.put("/order/temporaryComplete", data),
-        onSuccess: (response) => {
-            successAlert("order completed")
-            queryClient.refetchQueries({ queryKey: ["receipt"] });
-            queryClient.refetchQueries({ queryKey: ["cashier"] });
-            refetch()
-        },
-        onError: (err) => {
-            errorAlert("error")
-        },
-  })
-
-  const completeOrderhanlder = (id : string, orderNumber : number) => {
-    mutation.mutate({ id, orderNumber })
-  }
-
+ 
 
   useLayoutEffect(() => {
     navigation.setOptions({
