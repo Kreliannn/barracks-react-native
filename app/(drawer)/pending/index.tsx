@@ -1,10 +1,11 @@
+import CompleteButton from '@/components/pending/completeButton';
 import { getOrdersInterface } from '@/types/orders.type';
 import { errorAlert, successAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { Dimensions, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 type OrdersPageProps = DrawerNavigationProp<any>; 
@@ -60,6 +61,14 @@ export default function OrdersPage() {
     });
   }, [navigation, refetch]);
 
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();   
+    }, [refetch])
+  );
+  
+
   return (
     <ScrollView className="w-full p-2">
     <View className="flex-row flex-wrap">
@@ -93,15 +102,9 @@ export default function OrdersPage() {
             </View>
         </View>
         
-      
-        <TouchableOpacity
-            onPress={() => completeOrderhanlder(order._id, order.orderNumber)}
-            className="bg-green-600 py-1 mt-3 rounded-md"
-        >
-            <Text className="text-white text-center text-xs font-semibold">
-            Complete
-            </Text>
-        </TouchableOpacity>
+
+          <CompleteButton orderId={order._id} orderNumber={order.orderNumber} refetch={refetch} />
+            
         </View>
      
       ))}

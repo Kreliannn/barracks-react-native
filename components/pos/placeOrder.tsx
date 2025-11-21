@@ -37,7 +37,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
   });
 
 
-  const printOrderNumberHandler = (num : number) => {
+  const printOrderNumberHandler = (num : number, date : string, time : string) => {
     Alert.alert(
       "Print Order Number",
       "Are you sure you want to print?",
@@ -49,7 +49,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
         {
           text: "OK",
           onPress: async () => {
-            await printOrderNumber(num); 
+            await printOrderNumber(num, date, time); 
           },
         },
       ]
@@ -70,7 +70,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
 
 
         // temporary
-        //printOrderNumberHandler(order.orderNumber)
+        //printOrderNumberHandler(order.orderNumber, order.date, order.time)
 
     },
     onError: () => {
@@ -103,7 +103,10 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
     };
 
     addTable(table);
-    setTable("");
+
+    // temporary
+    // setTable("");
+    
     mutation.mutate(orderData);
   
   };

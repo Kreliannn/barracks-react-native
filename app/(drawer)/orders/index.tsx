@@ -11,9 +11,9 @@ import { errorAlert, successAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
 import { checkIfHasUnli, isTime1To3am, plus1Day } from '@/utils/customFunction';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
 type OrdersPageProps = DrawerNavigationProp<any>; 
@@ -72,7 +72,11 @@ export default function OrdersPage() {
     });
   }, [navigation, refetch]);
 
-
+  useFocusEffect(
+    useCallback(() => {
+      refetch();   
+    }, [refetch])
+  );
   
 
   return (

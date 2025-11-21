@@ -5,8 +5,10 @@ interface TableState {
   setTable: (newTable: string) => void;
 }
 
+// temporary table should be empty by default
+
 const useTableStore = create<TableState>((set) => ({
-  table: "",
+  table: "Take Away",
   setTable: (newTable: string) => set({ table: newTable }),
 }));
 
