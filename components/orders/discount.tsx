@@ -3,7 +3,8 @@ import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
+
 
 export default function ApplyDiscount({ order, orderId }: { order: orderInterface; orderId: string }) {
   const [visible, setVisible] = useState(false);
@@ -138,7 +139,10 @@ export default function ApplyDiscount({ order, orderId }: { order: orderInterfac
                   keyboardType="numeric"
                   className="flex-1 border border-gray-300 rounded-l-xl px-3 py-2"
                 />
-                <TouchableOpacity className="bg-green-600 px-4 rounded-r-xl justify-center" onPress={() => percentageHandler()}>
+                <TouchableOpacity className={`bg-green-600 px-4 rounded-r-xl flex-row justify-center items-center gap-2 ${mutation.isPending && "opacity-50"}`} onPress={() => percentageHandler()} >
+                  {mutation.isPending && (
+                      <ActivityIndicator size="small" color="#fff" />
+                  )}
                   <Text className="text-white font-semibold text-sm">Apply</Text>
                 </TouchableOpacity>
               </View>

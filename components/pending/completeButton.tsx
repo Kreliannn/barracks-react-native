@@ -1,10 +1,9 @@
 
 import { errorAlert, successAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
-import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
-import { Modal, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Modal, Text, TouchableOpacity, View } from "react-native";
 
 
 export default function CompleteButton({ orderId , orderNumber, refetch} : { orderId : string, orderNumber : number, refetch : () => void}) {
@@ -68,16 +67,11 @@ export default function CompleteButton({ orderId , orderNumber, refetch} : { ord
             {/* Confirm Button */}
             <TouchableOpacity
                 onPress={() => completeOrderhanlder(orderId, orderNumber)}
-                className={"w-full py-3 bg-green-600 rounded-xl mb-3 flex-row justify-center items-center gap-2" + `${mutation.isPending && "opacity-50"}`}
+                className={`w-full py-3 bg-green-600 rounded-xl mb-3 flex-row justify-center items-center gap-2 ${mutation.isPending && "opacity-50"}`}
                 disabled={mutation.isPending}
             >
                 {mutation.isPending && (
-                      <Ionicons
-                        name="reload"
-                        size={18}
-                        color="white"
-                        className="animate-spin"
-                      />
+                  <ActivityIndicator size="small" color="#fff" />
                 )}
                 <Text className="text-white font-semibold text-center text-base">
                     Yes, Complete Order

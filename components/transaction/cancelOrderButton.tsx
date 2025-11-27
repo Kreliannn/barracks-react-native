@@ -1,15 +1,14 @@
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
-import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-  Modal,
+  ActivityIndicator, Modal,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 
@@ -101,16 +100,11 @@ export default function CancelOrderbutton({ order }: { order: getOrdersInterface
 
               <TouchableOpacity
                 onPress={cancelOrder}
-                className={"flex-1 px-4 py-2 bg-green-500 rounded-lg flex-row justify-center items-center gap-2" + `${mutation.isPending && "opacity-50"}`}
+                className={`flex-1 px-4 py-2 bg-green-500 rounded-lg flex-row justify-center items-center gap-2 ${mutation.isPending && "opacity-50"}`}
                 disabled={mutation.isPending}
               >
                  {mutation.isPending && (
-                      <Ionicons
-                        name="reload"
-                        size={18}
-                        color="white"
-                        className="animate-spin"
-                      />
+                      <ActivityIndicator size="small" color="#fff" />
                 )}
                 <Text className="text-center text-white font-semibold">
                   Confirm

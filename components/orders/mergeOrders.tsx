@@ -2,10 +2,11 @@ import useActiveTableStore from "@/store/activeTable.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   Modal,
   ScrollView,
@@ -164,16 +165,11 @@ export default function MergeOrders({
             {/* Buttons */}
             <TouchableOpacity
               onPress={mergeHandler}
-              className={"bg-emerald-600 rounded-lg py-2 mt-3 flex-row justify-center items-center gap-2" + `${mutation.isPending && "opacity-50"}`}
+              className={`bg-emerald-600 rounded-lg py-2 mt-3 flex-row justify-center items-center gap-2 ${mutation.isPending && "opacity-50"}`}
               disabled={mutation.isPending}
             >
                {mutation.isPending && (
-                      <Ionicons
-                        name="reload"
-                        size={18}
-                        color="white"
-                        className="animate-spin"
-                      />
+                    <ActivityIndicator size="small" color="#fff" />
                 )}
               <Text className="text-white text-center font-semibold">
                 Merge Selected

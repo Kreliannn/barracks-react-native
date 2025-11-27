@@ -8,10 +8,9 @@ import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { getDate } from "@/utils/customFunction";
 import { printForKitchen, printOrderNumber } from "@/utils/print";
-import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Modal, Text, TouchableOpacity, View } from "react-native";
 
 
 export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
@@ -172,12 +171,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
             >
               <Text className="text-center text-white font-bold text-lg">
                 {mutation.isPending && (
-                      <Ionicons
-                        name="reload"
-                        size={18}
-                        color="white"
-                        className="animate-spin"
-                      />
+                      <ActivityIndicator size="small" color="#fff" />
                 )}
                 {connectedDevice ? "Place Order" : "No Printer Connection"}
               </Text>
