@@ -10,7 +10,7 @@ import {
   getTotalVat,
   getTotalWithVat,
 } from "@/utils/customFunction";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
@@ -20,6 +20,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 
 export default function SplitOrders({
   order,
@@ -335,7 +336,16 @@ export default function SplitOrders({
                 <TouchableOpacity
                   onPress={splitHandler}
                   className="mt-4 bg-emerald-600 py-3 rounded-lg"
+                  disabled={mutation.isPending}
                 >
+                   {mutation.isPending && (
+                      <Ionicons
+                        name="reload"
+                        size={40}
+                        color="white"
+                        className="animate-spin"
+                      />
+                  )}
                   <Text className="text-white text-center font-semibold text-base">
                     Split
                   </Text>

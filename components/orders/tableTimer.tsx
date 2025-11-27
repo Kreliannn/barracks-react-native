@@ -18,7 +18,7 @@ export default function TableTimer({ time }: { time: string }) {
     start.setHours(hours, minutes, 0, 0);
 
     // End time = +3 mins (change to 10 * 60 * 1000 for 10 mins)
-    const end = new Date(start.getTime() + 3 * 60 * 1000);
+    const end = new Date(start.getTime() + 120 * 60 * 1000);
 
     const interval = setInterval(() => {
       const diff = end.getTime() - new Date().getTime();

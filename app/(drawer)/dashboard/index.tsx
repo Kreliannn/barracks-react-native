@@ -4,6 +4,7 @@ import { changeInterface, getChangeInterface } from "@/types/change.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { getDate } from "@/utils/customFunction";
+import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -175,7 +176,16 @@ export default function Index() {
           <TouchableOpacity
             onPress={changeHandler}
             className="bg-green-600 px-4 py-3 rounded-xl"
+            disabled={mutation.isPending}
           >
+             {mutation.isPending && (
+                      <Ionicons
+                        name="reload"
+                        size={40}
+                        color="white"
+                        className="animate-spin"
+                      />
+            )}
             <Text className="text-white font-semibold">Save</Text>
           </TouchableOpacity>
         </View>
@@ -185,7 +195,15 @@ export default function Index() {
       {(shift != null) && (
         <View className="items-end p-2">
           <Text className="text-red-800 text-lg font-bold mb-2 ">End Shift :</Text>
-          <TouchableOpacity className="bg-red-600 px-10 py-3 rounded-xl" onPress={endShiftHandler} >
+          <TouchableOpacity className="bg-red-600 px-10 py-3 rounded-xl" onPress={endShiftHandler} disabled={mutationEndShift.isPending} >
+           {mutationEndShift.isPending && (
+                      <Ionicons
+                        name="reload"
+                        size={40}
+                        color="white"
+                        className="animate-spin"
+                      />
+            )}
             <Text className="text-white font-semibold">End</Text>
           </TouchableOpacity>
         </View>

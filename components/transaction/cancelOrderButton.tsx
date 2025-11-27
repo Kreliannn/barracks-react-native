@@ -1,6 +1,7 @@
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
+import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
@@ -10,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 
 export default function CancelOrderbutton({ order }: { order: getOrdersInterface }) {
   const [visible, setVisible] = useState(false);
@@ -34,7 +36,7 @@ export default function CancelOrderbutton({ order }: { order: getOrdersInterface
   });
 
   const cancelOrder = () => {
-    if (input.trim() === "123") {
+    if (input.trim() === "1411") {
       mutation.mutate(order._id);
     } else {
       setIsWrong(true);
@@ -100,7 +102,16 @@ export default function CancelOrderbutton({ order }: { order: getOrdersInterface
               <TouchableOpacity
                 onPress={cancelOrder}
                 className="flex-1 px-4 py-2 bg-green-500 rounded-lg"
+                disabled={mutation.isPending}
               >
+                 {mutation.isPending && (
+                      <Ionicons
+                        name="reload"
+                        size={40}
+                        color="white"
+                        className="animate-spin"
+                      />
+                )}
                 <Text className="text-center text-white font-semibold">
                   Confirm
                 </Text>

@@ -8,10 +8,10 @@ import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { getDate } from "@/utils/customFunction";
 import { printForKitchen, printOrderNumber } from "@/utils/print";
+import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
-
 
 
 export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
@@ -77,6 +77,7 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
         errorAlert( "Something went wrong while placing the order.");
     },
   });
+  
 
   const handlePlaceOrder = async () => {
     if (!user?.fullname || !user?.branch) return Alert.alert("No user");
@@ -167,9 +168,17 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
             <TouchableOpacity
               onPress={handlePlaceOrder}
               className={` py-3 rounded-lg shadow disabled ${connectedDevice ? "bg-green-500" : "bg-gray-600"}`}
-              disabled={!connectedDevice}
+              disabled={!connectedDevice || mutation.isPending}
             >
               <Text className="text-center text-white font-bold text-lg">
+                {mutation.isPending && (
+                      <Ionicons
+                        name="reload"
+                        size={40}
+                        color="white"
+                        className="animate-spin"
+                      />
+                )}
                 {connectedDevice ? "Place Order" : "No Printer Connection"}
               </Text>
             </TouchableOpacity>

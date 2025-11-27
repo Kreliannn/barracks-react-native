@@ -2,7 +2,7 @@ import useActiveTableStore from "@/store/activeTable.store";
 import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import {
@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 
 
 export default function MergeOrders({
@@ -166,7 +165,16 @@ export default function MergeOrders({
             <TouchableOpacity
               onPress={mergeHandler}
               className="bg-emerald-600 rounded-lg py-2 mt-3"
+              disabled={mutation.isPending}
             >
+               {mutation.isPending && (
+                      <Ionicons
+                        name="reload"
+                        size={40}
+                        color="white"
+                        className="animate-spin"
+                      />
+                )}
               <Text className="text-white text-center font-semibold">
                 Merge Selected
               </Text>

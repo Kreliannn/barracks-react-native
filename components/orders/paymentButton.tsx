@@ -4,6 +4,7 @@ import { getOrdersInterface } from "@/types/orders.type";
 import { errorAlert, successAlert } from "@/utils/alert";
 import axiosInstance from "@/utils/axios";
 import { printOrderNumber } from "@/utils/print";
+import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -225,7 +226,16 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
                 <TouchableOpacity
                   onPress={completeOrder} 
                   className="bg-green-600 py-4 rounded-lg"
+                  disabled={mutation.isPending}
                 >
+                  {mutation.isPending && (
+                      <Ionicons
+                      name="reload"
+                      size={40}
+                      color="white"
+                      className="animate-spin"
+                    />
+                  )}
                   <Text className="text-white text-lg font-bold text-center">
                     Pay
                   </Text>
