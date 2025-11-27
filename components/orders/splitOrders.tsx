@@ -335,13 +335,13 @@ export default function SplitOrders({
                 {/* Split Button */}
                 <TouchableOpacity
                   onPress={splitHandler}
-                  className="mt-4 bg-emerald-600 py-3 rounded-lg"
+                  className={"mt-4 bg-emerald-600 py-3 rounded-lg  flex-row justify-center items-center gap-2" + `${mutation.isPending && "opacity-50"}`}
                   disabled={mutation.isPending}
                 >
                    {mutation.isPending && (
                       <Ionicons
                         name="reload"
-                        size={40}
+                        size={18}
                         color="white"
                         className="animate-spin"
                       />

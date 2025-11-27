@@ -175,13 +175,13 @@ export default function Index() {
 
           <TouchableOpacity
             onPress={changeHandler}
-            className="bg-green-600 px-4 py-3 rounded-xl"
+            className={"bg-green-600 px-4 py-3 rounded-xl flex-row justify-center items-center gap-2" + `${mutation.isPending && "opacity-50"}`}
             disabled={mutation.isPending}
           >
              {mutation.isPending && (
                       <Ionicons
                         name="reload"
-                        size={40}
+                        size={18}
                         color="white"
                         className="animate-spin"
                       />
@@ -195,11 +195,11 @@ export default function Index() {
       {(shift != null) && (
         <View className="items-end p-2">
           <Text className="text-red-800 text-lg font-bold mb-2 ">End Shift :</Text>
-          <TouchableOpacity className="bg-red-600 px-10 py-3 rounded-xl" onPress={endShiftHandler} disabled={mutationEndShift.isPending} >
+          <TouchableOpacity className={"bg-red-600 px-10 py-3 rounded-xl flex-row justify-center items-center gap-2" + `${mutationEndShift.isPending && "opacity-50"}`}  onPress={endShiftHandler} disabled={mutationEndShift.isPending} >
            {mutationEndShift.isPending && (
                       <Ionicons
                         name="reload"
-                        size={40}
+                        size={18}
                         color="white"
                         className="animate-spin"
                       />

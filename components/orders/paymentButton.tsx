@@ -225,13 +225,13 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
                 {/* Pay Button */}
                 <TouchableOpacity
                   onPress={completeOrder} 
-                  className="bg-green-600 py-4 rounded-lg"
+                  className={"bg-green-600 py-4 rounded-lg flex-row justify-center items-center gap-2" + `${mutation.isPending && "opacity-50"}`}
                   disabled={mutation.isPending}
                 >
                   {mutation.isPending && (
                       <Ionicons
                       name="reload"
-                      size={40}
+                      size={18}
                       color="white"
                       className="animate-spin"
                     />

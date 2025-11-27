@@ -236,7 +236,7 @@ export default function RefillButton({
               <TouchableOpacity
                 onPress={refillHandler}
                 disabled={mutation.isPending || !connectedDevice}
-                className={`w-full py-3 bg-emerald-600 rounded-lg ${!connectedDevice && "bg-gray-600"}` }
+                className={`w-full py-3 bg-emerald-600 rounded-lg flex-row justify-center items-center gap-2 ${!connectedDevice && "bg-gray-600"} ${mutation.isPending && "opacity-50"}` }
             
               >
                 <Text className="text-center text-white font-medium">

@@ -167,14 +167,14 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
             {/* Place Order Button */}
             <TouchableOpacity
               onPress={handlePlaceOrder}
-              className={` py-3 rounded-lg shadow disabled ${connectedDevice ? "bg-green-500" : "bg-gray-600"}`}
+              className={` py-3 rounded-lg shadow disabled flex-row justify-center items-center gap-2 ${connectedDevice ? "bg-green-500" : "bg-gray-600"} ${mutation.isPending && "opacity-50"}`}
               disabled={!connectedDevice || mutation.isPending}
             >
               <Text className="text-center text-white font-bold text-lg">
                 {mutation.isPending && (
                       <Ionicons
                         name="reload"
-                        size={40}
+                        size={18}
                         color="white"
                         className="animate-spin"
                       />

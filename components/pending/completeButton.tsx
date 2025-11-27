@@ -68,13 +68,13 @@ export default function CompleteButton({ orderId , orderNumber, refetch} : { ord
             {/* Confirm Button */}
             <TouchableOpacity
                 onPress={() => completeOrderhanlder(orderId, orderNumber)}
-                className="w-full py-3 bg-green-600 rounded-xl mb-3"
+                className={"w-full py-3 bg-green-600 rounded-xl mb-3 flex-row justify-center items-center gap-2" + `${mutation.isPending && "opacity-50"}`}
                 disabled={mutation.isPending}
             >
                 {mutation.isPending && (
                       <Ionicons
                         name="reload"
-                        size={40}
+                        size={18}
                         color="white"
                         className="animate-spin"
                       />
