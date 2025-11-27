@@ -169,10 +169,10 @@ export function PlaceOrderButton({ orderInfo }: { orderInfo: any }) {
               className={` py-3 rounded-lg shadow disabled flex-row justify-center items-center gap-2 ${connectedDevice ? "bg-green-500" : "bg-gray-600"} ${mutation.isPending && "opacity-50"}`}
               disabled={!connectedDevice || mutation.isPending}
             >
-              <Text className="text-center text-white font-bold text-lg">
-                {mutation.isPending && (
+              {mutation.isPending && (
                       <ActivityIndicator size="small" color="#fff" />
-                )}
+              )}
+              <Text className="text-center text-white font-bold text-lg">
                 {connectedDevice ? "Place Order" : "No Printer Connection"}
               </Text>
             </TouchableOpacity>

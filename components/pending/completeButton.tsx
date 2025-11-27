@@ -1,4 +1,5 @@
 
+import { getOrdersInterface } from '@/types/orders.type';
 import { errorAlert, successAlert } from '@/utils/alert';
 import axiosInstance from '@/utils/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -6,7 +7,7 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Modal, Text, TouchableOpacity, View } from "react-native";
 
 
-export default function CompleteButton({ orderId , orderNumber, refetch} : { orderId : string, orderNumber : number, refetch : () => void}) {
+export default function CompleteButton({ orderId , orderNumber, setOrders} : { orderId : string, orderNumber : number, setOrders :React.Dispatch<React.SetStateAction<getOrdersInterface[]>>}) {
   const [visible, setVisible] = useState(false);
 
   const queryClient = useQueryClient();
@@ -18,7 +19,7 @@ export default function CompleteButton({ orderId , orderNumber, refetch} : { ord
             successAlert("order completed")
             queryClient.refetchQueries({ queryKey: ["receipt"] });
             queryClient.refetchQueries({ queryKey: ["cashier"] });
-            refetch()
+            setOrders(response.data)
             setVisible(false)
         },
         onError: (err) => {

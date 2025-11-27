@@ -83,7 +83,7 @@ export default function OrdersPage() {
         </View>
         
 
-          <CompleteButton orderId={order._id} orderNumber={order.orderNumber} refetch={refetch} />
+          <CompleteButton orderId={order._id} orderNumber={order.orderNumber} setOrders={setOrders} />
             
         </View>
      
