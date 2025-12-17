@@ -22,9 +22,9 @@ export default function CancelOrderbutton({ order }: { order: getOrdersInterface
   const mutation = useMutation({
     mutationFn: (id: string) => axiosInstance.put("/order/cancel/" + id),
     onSuccess: () => {
-      successAlert( (order.status == "completed") ? "Order canceled" : "Status Changed")
+      successAlert("Order canceled")
       setVisible(false);
-      queryClient.refetchQueries({ queryKey: ["receipt"] });
+      queryClient.refetchQueries({ queryKey: ["order"] });
       queryClient.refetchQueries({ queryKey: ["cashier"] });
       setInput("");
       setIsWrong(false);
@@ -54,7 +54,7 @@ export default function CancelOrderbutton({ order }: { order: getOrdersInterface
         }}
         className="px-3 py-2 bg-red-500 rounded-lg"
       >
-        <Text className="text-white font-semibold"> {order.status == "completed" ? "cancel" : "revert"} </Text>
+        <Text className="text-white font-semibold"> cancel </Text>
       </TouchableOpacity>
 
       {/* Modal */}

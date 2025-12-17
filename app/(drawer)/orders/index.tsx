@@ -1,3 +1,4 @@
+import CancelOrderbutton from '@/components/orders/cancelOrderButton';
 import MergeOrders from '@/components/orders/mergeOrders';
 import MoveOrders from '@/components/orders/moveOrder';
 import OrderList from '@/components/orders/orderList';
@@ -197,10 +198,9 @@ export default function OrdersPage() {
             { /* Orders List */}
             <OrderList orders={order.orders} orderId={order._id}/>
 
-        
-
             {/* Footer */}
             <View className="p-4 bg-green-900 flex-row gap-2">
+                <CancelOrderbutton order={order} />
                 <ReprintOrder order={order} />
                 <PaymentButton order={order} setOrders={setOrders}  />
             </View>

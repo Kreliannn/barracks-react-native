@@ -88,7 +88,8 @@ const { setUser } = useUserStore();
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
             placeholder="Enter password"
-            className="flex-1 py-2 text-sm"
+            placeholderTextColor="#9CA3AF"
+            className="flex-1 py-2 text-sm  text-black"
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
            

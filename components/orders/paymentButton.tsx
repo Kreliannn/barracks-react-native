@@ -200,17 +200,17 @@ export default function PaymentButton({ order, setOrders }:  { order: getOrdersI
                 {/* Picker + Input */}
                 <View className="flex-row items-center mb-6">
                   <View className="w-[40%] border rounded-lg">
-                    <Picker
+                   <Picker
                       selectedValue={paymentMethod}
                       onValueChange={(val) => setPaymentMethod(val)}
                       dropdownIconColor="black"
                     >
-                      <Picker.Item label="Cash" value="cash" />
-                      <Picker.Item label="Debit Card" value="debitCard" />
-                      <Picker.Item label="Gcash" value="gcash" />
-                      <Picker.Item label="Pay Maya" value="payMaya" />
-                      <Picker.Item label="Grab Payment" value="grabPayment" />
-                      <Picker.Item label="Cheque" value="chequePayment" />
+                      <Picker.Item label="Cash" value="cash" color="#000" />
+                      <Picker.Item label="Debit Card" value="debitCard" color="#000" />
+                      <Picker.Item label="Gcash" value="gcash" color="#000" />
+                      <Picker.Item label="Pay Maya" value="payMaya" color="#000" />
+                      <Picker.Item label="Grab Payment" value="grabPayment" color="#000" />
+                      <Picker.Item label="Cheque" value="chequePayment" color="#000" />
                     </Picker>
                   </View>
 
