@@ -317,8 +317,9 @@ return (
             Date & Time
           </Text>
           <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[10%]">
-            Table
+            Number
           </Text>
+      
           <Text className="text-xs font-bold text-stone-700 uppercase tracking-wide w-[14%]">
             Cashier
           </Text>
@@ -361,15 +362,15 @@ return (
                 {transaction.time}
               </Text>
             </View>
-
-            {/* Table Column with Badge */}
+            
             <View className="w-[10%]">
-              <View className={`px-3 py-1.5 rounded-lg self-start ${ transaction.status == "canceled" ?  "bg-stone-50 " : "bg-emerald-100 "}`}>
-                <Text className="text-sm font-bold text-emerald-700">
-                  {transaction.table}
+              <View className={`px-3 py-1.5 rounded-lg self-start ${ transaction.status == "canceled" ?  "bg-stone-50 " : "bg-purple-100 "}`}>
+                <Text className="text-sm font-bold text-purple-700">
+                  {transaction.orderNumber}
                 </Text>
               </View>
             </View>
+
 
             {/* Cashier Column */}
             <View className="w-[14%]">
