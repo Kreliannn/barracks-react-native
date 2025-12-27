@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 
-export default function CancelOrderbutton({ order }: { order: getOrdersInterface }) {
+export default function CancelOrderbutton({ order, setorders }: { order: getOrdersInterface , setorders : (orders : getOrdersInterface[]) => void}) {
   const [visible, setVisible] = useState(false);
   const [input, setInput] = useState("");
   const [isWrong, setIsWrong] = useState(false);
@@ -21,11 +21,12 @@ export default function CancelOrderbutton({ order }: { order: getOrdersInterface
 
   const mutation = useMutation({
     mutationFn: (id: string) => axiosInstance.put("/order/cancel/" + id),
-    onSuccess: () => {
+    onSuccess: (response) => {
       successAlert("Order canceled")
       setVisible(false);
-      queryClient.refetchQueries({ queryKey: ["order"] });
       queryClient.refetchQueries({ queryKey: ["cashier"] });
+      queryClient.refetchQueries({ queryKey: ["receipt"] });
+      setorders(response.data)
       setInput("");
       setIsWrong(false);
     },
@@ -54,7 +55,7 @@ export default function CancelOrderbutton({ order }: { order: getOrdersInterface
         }}
         className="px-3 py-2 bg-red-500 rounded-lg"
       >
-        <Text className="text-white font-semibold"> cancel </Text>
+        <Text className="text-white font-bold"> X </Text>
       </TouchableOpacity>
 
       {/* Modal */}

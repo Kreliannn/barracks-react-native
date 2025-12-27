@@ -200,7 +200,7 @@ export default function OrdersPage() {
 
             {/* Footer */}
             <View className="p-4 bg-green-900 flex-row gap-2">
-                <CancelOrderbutton order={order} />
+                <CancelOrderbutton order={order} setorders={setOrders} />
                 <ReprintOrder order={order} />
                 <PaymentButton order={order} setOrders={setOrders}  />
             </View>
